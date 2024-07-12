@@ -1,2 +1,3 @@
 # aura-app
-Aura Application
+
+Aura.PHP application
