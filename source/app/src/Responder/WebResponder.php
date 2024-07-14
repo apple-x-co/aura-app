@@ -16,9 +16,6 @@ final class WebResponder implements ResponderInterface
     {
         http_response_code($response->getStatusCode());
 
-        // header('Content-Type: text/html; charset=utf-8');
-        // header('Content-Type: application/json');
-
         foreach ($response->getHeaders() as $name => $values) {
             foreach ($values as $value) {
                 header(sprintf('%s: %s', $name, $value), false);

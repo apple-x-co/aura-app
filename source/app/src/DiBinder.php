@@ -42,9 +42,14 @@ final class DiBinder
 
     private function responder(Container $di): void
     {
-        $di->set(ResponderInterface::class, $di->lazy(
-            static fn () => PHP_SAPI === 'cli' ? new CliResponder() : new WebResponder(),
-        ));
+        $di->set(
+            ResponderInterface::class,
+            $di->lazy(
+                static fn () => PHP_SAPI === 'cli' ?
+                    $di->newInstance(CliResponder::class) :
+                    $di->newInstance(WebResponder::class),
+            )
+        );
     }
 
     private function queryLocator(Container $di, string $appDir): void
@@ -68,21 +73,24 @@ final class DiBinder
 
     private function router(Container $di, string $appDir): void
     {
-        $di->set(RouterContainer::class, $di->lazy(
-            static function () use (&$appDir) {
-                $router = new RouterContainer();
+        $di->set(
+            RouterContainer::class,
+            $di->lazy(
+                static function () use (&$appDir, $di) {
+                    $router = $di->newInstance(RouterContainer::class);
 
-                $file = PHP_SAPI === 'cli' ?
-                    $appDir . '/var/conf/aura.route.cli.php' :
-                    $appDir . '/var/conf/aura.route.web.php';
+                    $file = PHP_SAPI === 'cli' ?
+                        $appDir . '/var/conf/aura.route.cli.php' :
+                        $appDir . '/var/conf/aura.route.web.php';
 
-                if (file_exists($file)) {
-                    $map = $router->getMap();
-                    require $file;
+                    if (file_exists($file)) {
+                        $map = $router->getMap();
+                        require $file;
+                    }
+
+                    return $router;
                 }
-
-                return $router;
-            }
-        ));
+            )
+        );
     }
 }
