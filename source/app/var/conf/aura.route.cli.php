@@ -10,4 +10,6 @@ $map->get(
     '/hello',
     '/hello',
     Handler\Hello::class,
-);
+)->extras([
+    'a' => 'b',
+]);

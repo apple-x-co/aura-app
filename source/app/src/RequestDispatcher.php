@@ -40,9 +40,9 @@ final class RequestDispatcher
 
     public function __invoke(): ResponseInterface|null
     {
-        $serverRequest = ServerRequestFactory::fromGlobals();
+        $origServerRequest = ServerRequestFactory::fromGlobals();
 
-        $routerMatch = $this->router->match($serverRequest);
+        $routerMatch = $this->router->match($origServerRequest);
         $route = $routerMatch->route;
         if ($route === false) {
             return new TextResponse(
@@ -51,6 +51,8 @@ final class RequestDispatcher
                 [],
             );
         }
+
+        $serverRequest = $routerMatch->serverRequest ?? $origServerRequest;
 
         foreach ($route->attributes as $name => $value) {
             $serverRequest = $serverRequest->withAttribute($name, $value);
@@ -70,9 +72,9 @@ final class RequestDispatcher
         }
 
         $object = $this->di->newInstance($routeHandler);
-        $method = sprintf('on%s', ucfirst(strtolower($routerMatch->method)));
+        $action = sprintf('on%s', ucfirst(strtolower($routerMatch->method)));
 
-        if (! method_exists($object, $method)) {
+        if (! method_exists($object, $action)) {
             return new TextResponse(
                 'Method not allowed.',
                 StatusCode::METHOD_NOT_ALLOWED,
@@ -81,7 +83,7 @@ final class RequestDispatcher
         }
 
         try {
-            $object = $object->$method($routerMatch->serverRequest ?? $serverRequest);
+            $object = $object->$action($routerMatch->serverRequest ?? $serverRequest);
             if (! $object instanceof AbstractRequestHandler) {
                 return new EmptyResponse();
             }

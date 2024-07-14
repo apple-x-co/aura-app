@@ -21,7 +21,7 @@ final class WebRouter implements RouterInterface
         return new RouterMatch(
             $serverRequest->getMethod(),
             $serverRequest->getUri()->getPath(),
-            $matcher->match($serverRequest)
+            $matcher->match($serverRequest),
         );
     }
 }
