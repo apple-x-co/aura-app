@@ -8,6 +8,8 @@ use MyVendor\MyPackage\RequestHandler\AbstractRequestHandler;
 
 use function json_encode;
 
+use const JSON_THROW_ON_ERROR;
+
 final class JsonRenderer implements RendererInterface
 {
     public function render(AbstractRequestHandler $requestHandler): string
@@ -16,8 +18,10 @@ final class JsonRenderer implements RendererInterface
             $requestHandler->headers['Content-Type'] = 'application/json';
         }
 
-        return json_encode([
-            'success' => true,
-        ], JSON_THROW_ON_ERROR);
+        if ($requestHandler->string === null) {
+            $requestHandler->string = json_encode($requestHandler->body, JSON_THROW_ON_ERROR);
+        }
+
+        return $requestHandler->string;
     }
 }

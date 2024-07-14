@@ -14,8 +14,11 @@ final class HtmlRenderer implements RendererInterface
             $requestHandler->headers['Content-Type'] = 'text/html; charset=utf-8';
         }
 
-        // TODO: Use qiq
+        if ($requestHandler->string === null) {
+            // TODO: Use qiq
+            $requestHandler->string = '<!DOCTYPE html><html lang="ja"><body><h1>HELLO WORLD!!</h1></body></html>';
+        }
 
-        return '<!DOCTYPE html><html lang="ja"><body><h1>HELLO WORLD!!</h1></body></html>';
+        return $requestHandler->string;
     }
 }

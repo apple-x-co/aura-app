@@ -5,11 +5,19 @@ declare(strict_types=1);
 namespace MyVendor\MyPackage\Handler;
 
 use MyVendor\MyPackage\RequestHandler\AbstractRequestHandler;
+use Stringable;
 
-final class Hello extends AbstractRequestHandler
+final class Hello extends AbstractRequestHandler implements Stringable
 {
     public function onGet(): self
     {
+        $this->body['Hello'] = 'world';
+
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return 'Hello World!?';
     }
 }

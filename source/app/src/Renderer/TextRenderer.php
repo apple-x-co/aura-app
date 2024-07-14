@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MyVendor\MyPackage\Renderer;
 
 use MyVendor\MyPackage\RequestHandler\AbstractRequestHandler;
+use Stringable;
 
 final class TextRenderer implements RendererInterface
 {
@@ -14,6 +15,10 @@ final class TextRenderer implements RendererInterface
             $requestHandler->headers['Content-Type'] = 'plain/text';
         }
 
-        return 'Hello World!';
+        if ($requestHandler->string === null) {
+            $requestHandler->string = (string) $requestHandler;
+        }
+
+        return $requestHandler->string;
     }
 }
