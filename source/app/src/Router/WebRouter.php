@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace MyVendor\MyPackage\Router;
 
 use Aura\Router\RouterContainer;
-use MyVendor\MyPackage\RouterInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 final class WebRouter implements RouterInterface

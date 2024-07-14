@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-namespace MyVendor\MyPackage;
+namespace MyVendor\MyPackage\Router;
 
-use MyVendor\MyPackage\Router\RouterMatch;
 use Psr\Http\Message\ServerRequestInterface;
 
 interface RouterInterface

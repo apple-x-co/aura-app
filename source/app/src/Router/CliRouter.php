@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace MyVendor\MyPackage\Router;
 
 use Aura\Router\RouterContainer;
-use Laminas\Diactoros\Request;
 use Laminas\Diactoros\ServerRequest;
-use MyVendor\MyPackage\RouterInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 final class CliRouter implements RouterInterface

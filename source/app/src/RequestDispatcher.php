@@ -16,6 +16,7 @@ use MyVendor\MyPackage\Renderer\HtmlRenderer;
 use MyVendor\MyPackage\Renderer\JsonRenderer;
 use MyVendor\MyPackage\Renderer\TextRenderer;
 use MyVendor\MyPackage\RequestHandler\AbstractRequestHandler;
+use MyVendor\MyPackage\Router\RouterInterface;
 use Psr\Http\Message\ResponseInterface;
 use Throwable;
 
