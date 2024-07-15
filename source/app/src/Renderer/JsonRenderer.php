@@ -18,7 +18,7 @@ final class JsonRenderer implements RendererInterface
             $requestHandler->headers['Content-Type'] = 'application/json';
         }
 
-        if ($requestHandler->string === null) {
+        if ($requestHandler->string === null && $requestHandler->body !== null) {
             $requestHandler->string = json_encode($requestHandler->body, JSON_THROW_ON_ERROR);
         }
 

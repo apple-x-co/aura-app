@@ -15,8 +15,8 @@ abstract class AbstractRequestHandler
     /** @var array<string, mixed>  */
     public array $headers = [];
 
-    /** @var array<string, mixed>  */
-    public array $body = [];
+    /** @var array<string, mixed>|null  */
+    public array|null $body = null;
 
     public RendererInterface|null $renderer = null;
 
