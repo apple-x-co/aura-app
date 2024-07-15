@@ -8,11 +8,14 @@ use Aura\Di\Container;
 use Aura\Di\ContainerBuilder;
 use Aura\Router\RouterContainer;
 use Koriym\QueryLocator\QueryLocator;
+use MyVendor\MyPackage\Renderer\HtmlRenderer;
 use MyVendor\MyPackage\Responder\CliResponder;
 use MyVendor\MyPackage\Responder\ResponderInterface;
 use MyVendor\MyPackage\Responder\WebResponder;
 use MyVendor\MyPackage\Router\CliRouter;
 use MyVendor\MyPackage\Router\WebRouter;
+use MyVendor\MyPackage\TemplateEngine\QiqRenderer;
+use Qiq\Template;
 
 use function file_exists;
 
@@ -30,6 +33,7 @@ final class DiBinder
         $this->responder($di);
         $this->requestDispatcher($di);
         $this->router($di, $appDir);
+        $this->renderer($di, $appDir);
 
         return $di;
     }
@@ -92,5 +96,14 @@ final class DiBinder
                 }
             )
         );
+    }
+
+    private function renderer(Container $di, string $appDir): void
+    {
+        $di->params[QiqRenderer::class]['template'] = $di->lazy(fn () => Template::new(
+            [$appDir . '/var/qiq/template'],
+        ));
+
+        $di->params[HtmlRenderer::class]['qiqRenderer'] = $di->lazyNew(QiqRenderer::class);
     }
 }

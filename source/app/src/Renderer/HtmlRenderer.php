@@ -5,9 +5,15 @@ declare(strict_types=1);
 namespace MyVendor\MyPackage\Renderer;
 
 use MyVendor\MyPackage\RequestHandler\AbstractRequestHandler;
+use MyVendor\MyPackage\TemplateEngine\QiqRenderer;
 
 final class HtmlRenderer implements RendererInterface
 {
+    public function __construct(
+        private readonly QiqRenderer $qiqRenderer,
+    ) {
+    }
+
     public function render(AbstractRequestHandler $requestHandler): string
     {
         if (! isset($requestHandler->headers['Content-Type'])) {
@@ -15,8 +21,7 @@ final class HtmlRenderer implements RendererInterface
         }
 
         if ($requestHandler->string === null) {
-            // TODO: Use qiq
-            $requestHandler->string = '<!DOCTYPE html><html lang="ja"><body><h1>HELLO WORLD!!</h1></body></html>';
+            $requestHandler->string = $this->qiqRenderer->render($requestHandler);
         }
 
         return $requestHandler->string;
