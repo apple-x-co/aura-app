@@ -21,9 +21,4 @@ abstract class AbstractRequestHandler
     public RendererInterface|null $renderer = null;
 
     public string|null $string = null;
-
-    public function setRenderer(RendererInterface|null $renderer): void
-    {
-        $this->renderer = $renderer;
-    }
 }

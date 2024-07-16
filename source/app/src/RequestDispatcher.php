@@ -72,8 +72,11 @@ final class RequestDispatcher
         }
 
         $object = $this->di->newInstance($routeHandler);
-        $action = sprintf('on%s', ucfirst(strtolower($routerMatch->method)));
+        if (! $object instanceof AbstractRequestHandler) {
+            return new EmptyResponse();
+        }
 
+        $action = sprintf('on%s', ucfirst(strtolower($routerMatch->method)));
         if (! method_exists($object, $action)) {
             return new TextResponse(
                 'Method not allowed.',
@@ -84,9 +87,6 @@ final class RequestDispatcher
 
         try {
             $object = $object->$action($routerMatch->serverRequest ?? $serverRequest);
-            if (! $object instanceof AbstractRequestHandler) {
-                return new EmptyResponse();
-            }
 
             if (isset($object->headers['location'])) {
                 return new RedirectResponse(
