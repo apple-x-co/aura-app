@@ -6,11 +6,11 @@ namespace MyVendor\MyPackage;
 
 use Aura\Di\Container;
 use Koriym\EnvJson\EnvJson;
-
 use MyVendor\MyPackage\Responder\ResponderInterface;
 use Psr\Http\Message\ResponseInterface;
 
 use function assert;
+use function dirname;
 
 final class Bootstrap
 {

@@ -69,7 +69,7 @@ final class DiBinder
     {
         $qiqCachePath = getenv('QIQ_CACHE_PATH');
 
-        $di->params[QiqRenderer::class]['template'] = $di->lazy(fn () => Template::new(
+        $di->params[QiqRenderer::class]['template'] = $di->lazy(static fn () => Template::new(
             [$appDir . '/var/qiq/template'],
             '.php',
             empty($qiqCachePath) ? null : $appDir . $qiqCachePath,
@@ -92,7 +92,7 @@ final class DiBinder
 
     private function request(Container $di): void
     {
-        $di->set(ServerRequestInterface::class, $di->lazy(fn () => ServerRequestFactory::fromGlobals()));
+        $di->set(ServerRequestInterface::class, $di->lazy(static fn () => ServerRequestFactory::fromGlobals()));
 
         $di->types[ServerRequestInterface::class] = $di->lazyGet(ServerRequestInterface::class);
     }
@@ -103,7 +103,7 @@ final class DiBinder
         $di->params[WebRouter::class]['routerContainer'] = $di->lazyGet(RouterContainer::class);
 
         $di->params[RequestDispatcher::class]['appMeta'] = $di->lazyGet(AppMeta::class);
-        $di->params[RequestDispatcher::class]['di'] = $di->lazy(fn () => $di);
+        $di->params[RequestDispatcher::class]['di'] = $di->lazy(static fn () => $di);
 
         if (PHP_SAPI === 'cli') {
             $di->set(RouterInterface::class, $di->lazyNew(CliRouter::class));
@@ -143,8 +143,8 @@ final class DiBinder
                         require $file;
 
                         return $router;
-                    }
-                )
+                    },
+                ),
             );
 
             return;

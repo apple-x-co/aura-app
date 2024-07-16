@@ -9,11 +9,18 @@ use Qiq\Template;
 use ReflectionClass;
 
 use function array_merge;
+use function assert;
+use function is_array;
+use function is_string;
+use function str_replace;
+use function strpos;
+use function substr;
 
 final class QiqRenderer
 {
     private const LENGTH_OF_RESOURCE_DIR = 12;
 
+    /** @param array<string, mixed> $data */
     public function __construct(
         private readonly Template $template,
         private readonly array $data,

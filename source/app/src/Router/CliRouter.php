@@ -8,10 +8,12 @@ use Aura\Router\RouterContainer;
 use Laminas\Diactoros\ServerRequest;
 use Psr\Http\Message\ServerRequestInterface;
 
+use function strtoupper;
+
 final class CliRouter implements RouterInterface
 {
     public function __construct(
-        private readonly RouterContainer $routerContainer
+        private readonly RouterContainer $routerContainer,
     ) {
     }
 
@@ -35,7 +37,7 @@ final class CliRouter implements RouterInterface
             $method,
             $path,
             $matcher->match($request),
-            $request
+            $request,
         );
     }
 }

@@ -10,7 +10,6 @@ use Laminas\Diactoros\Response;
 use Laminas\Diactoros\Response\EmptyResponse;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Laminas\Diactoros\Response\TextResponse;
-use Laminas\Diactoros\ServerRequestFactory;
 use MyVendor\MyPackage\Exception\RuntimeException;
 use MyVendor\MyPackage\Renderer\HtmlRenderer;
 use MyVendor\MyPackage\Renderer\JsonRenderer;
@@ -112,6 +111,7 @@ final class RequestDispatcher
             foreach ($object->headers as $name => $value) {
                 $response = $response->withHeader($name, $value);
             }
+
             $response = $response->withStatus($object->code);
         } catch (Throwable $throwable) {
             return new TextResponse(

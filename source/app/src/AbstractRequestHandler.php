@@ -7,7 +7,7 @@ namespace MyVendor\MyPackage;
 use Koriym\HttpConstants\StatusCode;
 use MyVendor\MyPackage\Renderer\RendererInterface;
 
-class AbstractRequestHandler
+abstract class AbstractRequestHandler
 {
     /** @var int<200, max>  */
     public int $code = StatusCode::OK;
@@ -17,8 +17,6 @@ class AbstractRequestHandler
 
     /** @var array<string, mixed>|null  */
     public array|null $body = null;
-
     public RendererInterface|null $renderer = null;
-
     public string|null $string = null;
 }

@@ -10,7 +10,7 @@ use Psr\Http\Message\ServerRequestInterface;
 final class WebRouter implements RouterInterface
 {
     public function __construct(
-        private readonly RouterContainer $routerContainer
+        private readonly RouterContainer $routerContainer,
     ) {
     }
 

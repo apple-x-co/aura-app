@@ -13,7 +13,7 @@ final class RouterMatch
         public readonly string $method,
         public readonly string $path,
         public readonly Route|false $route,
-        public readonly ServerRequestInterface|null $serverRequest = null
+        public readonly ServerRequestInterface|null $serverRequest = null,
     ) {
     }
 }
