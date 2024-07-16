@@ -4,7 +4,7 @@
     "description": "",
     "license": "MIT",
     "require": {
-        "php": "^8.0",
+        "php": "^8.2",
         "aura/auth": "^4.0",
         "aura/di": "^4.2",
         "aura/html": "^2.6",

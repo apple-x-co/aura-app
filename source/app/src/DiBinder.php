@@ -24,10 +24,12 @@ use Qiq\Template;
 
 use function file_exists;
 use function getenv;
+use function is_string;
 use function time;
 
 use const PHP_SAPI;
 
+/** @psalm-suppress UndefinedPropertyAssignment */
 final class DiBinder
 {
     public function __invoke(string $appDir, string $tmpDir): Container
@@ -72,7 +74,7 @@ final class DiBinder
         $di->params[QiqRenderer::class]['template'] = $di->lazy(static fn () => Template::new(
             [$appDir . '/var/qiq/template'],
             '.php',
-            empty($qiqCachePath) ? null : $appDir . $qiqCachePath,
+            is_string($qiqCachePath) && $qiqCachePath !== '' ? $appDir . $qiqCachePath : null,
         ));
         $di->params[QiqRenderer::class]['data'] = $di->lazyArray([
             'timestamp' => $di->lazyValue('timestamp'),
@@ -139,6 +141,8 @@ final class DiBinder
                     static function () use ($file) {
                         $router = new RouterContainer();
                         $map = $router->getMap();
+
+                        /** @psalm-suppress UnresolvableInclude */
                         require $file;
 
                         return $router;

@@ -8,6 +8,8 @@ use Aura\Router\RouterContainer;
 use Laminas\Diactoros\ServerRequest;
 use Psr\Http\Message\ServerRequestInterface;
 
+use function assert;
+use function is_string;
 use function strtoupper;
 
 final class CliRouter implements RouterInterface
@@ -22,6 +24,8 @@ final class CliRouter implements RouterInterface
         $serverParams = $serverRequest->getServerParams();
         $method = strtoupper($serverParams['argv'][1]);
         $path = $serverParams['argv'][2];
+
+        assert(is_string($path));
 
         $request = new ServerRequest(
             [],
