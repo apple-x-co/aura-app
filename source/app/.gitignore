@@ -3,5 +3,7 @@
 /build/
 /composer.lock
 /phpunit.xml
+/var/tmp/qiq/*
+!/var/tmp/qiq/.gitkeep
 /.phpunit.result.cache
 /.phpcs-cache

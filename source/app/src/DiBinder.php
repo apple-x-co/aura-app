@@ -19,6 +19,7 @@ use Qiq\Template;
 
 use function file_exists;
 
+use function getenv;
 use function time;
 
 use const PHP_SAPI;
@@ -102,8 +103,13 @@ final class DiBinder
 
     private function renderer(Container $di, string $appDir): void
     {
+        $qiqCachePath = getenv('QIQ_CACHE_PATH');
+
+        // FIXME: "new()" を別の呼び出し方にできないのか?
         $di->params[QiqRenderer::class]['template'] = $di->lazy(fn () => Template::new(
             [$appDir . '/var/qiq/template'],
+            '.php',
+            empty($qiqCachePath) ? null : $appDir . $qiqCachePath,
         ));
         $di->values['timestamp'] = $di->lazy(fn () => time());
         $di->params[QiqRenderer::class]['data'] = $di->lazyArray([
