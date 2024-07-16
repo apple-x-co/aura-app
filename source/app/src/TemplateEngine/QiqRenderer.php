@@ -8,12 +8,15 @@ use MyVendor\MyPackage\RequestHandler\AbstractRequestHandler;
 use Qiq\Template;
 use ReflectionClass;
 
+use function array_merge;
+
 final class QiqRenderer
 {
     private const LENGTH_OF_RESOURCE_DIR = 12;
 
     public function __construct(
         private readonly Template $template,
+        private readonly array $data,
     ) {
     }
 
@@ -22,7 +25,7 @@ final class QiqRenderer
         $template = clone $this->template;
         $this->setTemplateView($template, $requestHandler);
         assert($requestHandler->body === null || is_array($requestHandler->body));
-        $template->setData($requestHandler->body ?? []);
+        $template->setData(array_merge($this->data, $requestHandler->body ?? []));
 
         return $template();
     }

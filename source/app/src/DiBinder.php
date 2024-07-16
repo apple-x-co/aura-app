@@ -19,6 +19,8 @@ use Qiq\Template;
 
 use function file_exists;
 
+use function time;
+
 use const PHP_SAPI;
 
 final class DiBinder
@@ -103,6 +105,10 @@ final class DiBinder
         $di->params[QiqRenderer::class]['template'] = $di->lazy(fn () => Template::new(
             [$appDir . '/var/qiq/template'],
         ));
+        $di->values['timestamp'] = $di->lazy(fn () => time());
+        $di->params[QiqRenderer::class]['data'] = $di->lazyArray([
+            'timestamp' => $di->lazyValue('timestamp'),
+        ]);
 
         $di->params[HtmlRenderer::class]['qiqRenderer'] = $di->lazyNew(QiqRenderer::class);
     }
