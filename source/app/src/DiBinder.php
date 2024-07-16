@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace MyVendor\MyPackage;
 
-use A;
 use Aura\Di\Container;
 use Aura\Di\ContainerBuilder;
 use Aura\Router\RouterContainer;
@@ -86,11 +85,15 @@ final class DiBinder
         $di->set(JsonRenderer::class, $di->lazyNew(JsonRenderer::class));
         $di->set(TextRenderer::class, $di->lazyNew(TextRenderer::class));
 
+        $di->types[HtmlRenderer::class] = $di->lazyGet(HtmlRenderer::class);
+        $di->types[JsonRenderer::class] = $di->lazyGet(JsonRenderer::class);
+        $di->types[TextRenderer::class] = $di->lazyGet(TextRenderer::class);
     }
 
     private function request(Container $di): void
     {
         $di->set(ServerRequestInterface::class, $di->lazy(fn () => ServerRequestFactory::fromGlobals()));
+
         $di->types[ServerRequestInterface::class] = $di->lazyGet(ServerRequestInterface::class);
     }
 
