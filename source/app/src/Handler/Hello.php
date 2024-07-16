@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace MyVendor\MyPackage\Handler;
 
-use MyVendor\MyPackage\AbstractRequestHandler;
-use Stringable;
+use MyVendor\MyPackage\RequestHandler;
 
-final class Hello extends AbstractRequestHandler implements Stringable
+final class Hello extends RequestHandler
 {
     public function onGet(): self
     {

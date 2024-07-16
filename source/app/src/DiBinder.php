@@ -102,7 +102,6 @@ final class DiBinder
         $di->params[CliRouter::class]['routerContainer'] = $di->lazyGet(RouterContainer::class);
         $di->params[WebRouter::class]['routerContainer'] = $di->lazyGet(RouterContainer::class);
 
-        $di->params[RequestDispatcher::class]['appMeta'] = $di->lazyGet(AppMeta::class);
         $di->params[RequestDispatcher::class]['di'] = $di->lazy(static fn () => $di);
 
         if (PHP_SAPI === 'cli') {

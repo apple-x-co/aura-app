@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace MyVendor\MyPackage\Renderer;
 
-use MyVendor\MyPackage\AbstractRequestHandler;
+use MyVendor\MyPackage\RequestHandler;
 
 interface RendererInterface
 {
-    public function render(AbstractRequestHandler $requestHandler): string;
+    public function render(RequestHandler $requestHandler): string;
 }

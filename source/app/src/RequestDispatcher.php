@@ -7,7 +7,6 @@ namespace MyVendor\MyPackage;
 use Aura\Di\Container;
 use Koriym\HttpConstants\StatusCode;
 use Laminas\Diactoros\Response;
-use Laminas\Diactoros\Response\EmptyResponse;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Laminas\Diactoros\Response\TextResponse;
 use MyVendor\MyPackage\Exception\RuntimeException;
@@ -31,10 +30,12 @@ use function ucfirst;
 final class RequestDispatcher
 {
     public function __construct(
-        private readonly AppMeta $appMeta,
         private readonly Container $di,
         private readonly RouterInterface $router,
         private readonly ServerRequestInterface $serverRequest,
+        private readonly HtmlRenderer $htmlRenderer,
+        private readonly JsonRenderer $jsonRenderer,
+        private readonly TextRenderer $textRenderer,
     ) {
     }
 
@@ -70,21 +71,20 @@ final class RequestDispatcher
         }
 
         $object = $this->di->newInstance($routeHandler);
-        if (! $object instanceof AbstractRequestHandler) {
-            return new EmptyResponse();
+        if (! $object instanceof RequestHandler) {
+            throw new RuntimeException('Route handler "' . $routeHandler . '" not found.');
         }
 
         $action = sprintf('on%s', ucfirst(strtolower($routerMatch->method)));
         if (! method_exists($object, $action)) {
-            return new TextResponse(
-                'Method not allowed.',
-                StatusCode::METHOD_NOT_ALLOWED,
-                [],
-            );
+            throw new RuntimeException('Method not allowed.');
         }
 
         try {
             $object = $object->$action($routerMatch->serverRequest ?? $serverRequest);
+            if (! $object instanceof RequestHandler) {
+                throw new RuntimeException('Invalid response type.');
+            }
 
             if (isset($object->headers['location'])) {
                 return new RedirectResponse(
@@ -98,11 +98,11 @@ final class RequestDispatcher
             if ($renderer === null) {
                 $accepts = $serverRequest->getHeader('accept');
                 if (! empty($accepts) && str_contains($accepts[0], 'text/html')) {
-                    $renderer = $this->di->get(HtmlRenderer::class);
+                    $renderer = $this->htmlRenderer;
                 } elseif (! empty($accepts) && str_contains($accepts[0], 'application/json')) {
-                    $renderer = $this->di->get(JsonRenderer::class);
+                    $renderer = $this->jsonRenderer;
                 } else {
-                    $renderer = $this->di->get(TextRenderer::class);
+                    $renderer = $this->textRenderer;
                 }
             }
 

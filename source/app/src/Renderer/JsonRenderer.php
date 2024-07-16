@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace MyVendor\MyPackage\Renderer;
 
-use MyVendor\MyPackage\AbstractRequestHandler;
+use MyVendor\MyPackage\RequestHandler;
 
 use function json_encode;
 
@@ -12,7 +12,7 @@ use const JSON_THROW_ON_ERROR;
 
 final class JsonRenderer implements RendererInterface
 {
-    public function render(AbstractRequestHandler $requestHandler): string
+    public function render(RequestHandler $requestHandler): string
     {
         if (! isset($requestHandler->headers['Content-Type'])) {
             $requestHandler->headers['Content-Type'] = 'application/json';
@@ -22,6 +22,6 @@ final class JsonRenderer implements RendererInterface
             $requestHandler->string = json_encode($requestHandler->body, JSON_THROW_ON_ERROR);
         }
 
-        return $requestHandler->string;
+        return $requestHandler->string ?? '{}';
     }
 }

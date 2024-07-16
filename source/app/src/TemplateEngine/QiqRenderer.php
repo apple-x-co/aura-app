@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace MyVendor\MyPackage\TemplateEngine;
 
-use MyVendor\MyPackage\AbstractRequestHandler;
+use MyVendor\MyPackage\RequestHandler;
 use Qiq\Template;
 use ReflectionClass;
 
 use function array_merge;
 use function assert;
-use function is_array;
 use function is_string;
 use function str_replace;
 use function strpos;
@@ -27,17 +26,16 @@ final class QiqRenderer
     ) {
     }
 
-    public function render(AbstractRequestHandler $requestHandler): string
+    public function render(RequestHandler $requestHandler): string
     {
         $template = clone $this->template;
         $this->setTemplateView($template, $requestHandler);
-        assert($requestHandler->body === null || is_array($requestHandler->body));
         $template->setData(array_merge($this->data, $requestHandler->body ?? []));
 
         return $template();
     }
 
-    private function setTemplateView(Template $template, AbstractRequestHandler $requestHandler): void
+    private function setTemplateView(Template $template, RequestHandler $requestHandler): void
     {
         $fileName = (new ReflectionClass($requestHandler))->getFileName();
         assert(is_string($fileName));
