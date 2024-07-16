@@ -24,7 +24,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use Qiq\Template;
 
 use function file_exists;
-
 use function getenv;
 use function time;
 
@@ -35,7 +34,7 @@ final class DiBinder
     public function __invoke(string $appDir, string $tmpDir): Container
     {
         $builder = new ContainerBuilder();
-        $di = $builder->newInstance();
+        $di = $builder->newInstance(true); // NOTE: "$di->types['xxx']" を使うために有効化
 
         $this->appMeta($di, $appDir, $tmpDir);
         $this->queryLocator($di, $appDir);
@@ -86,11 +85,13 @@ final class DiBinder
         $di->set(HtmlRenderer::class, $di->lazyNew(HtmlRenderer::class));
         $di->set(JsonRenderer::class, $di->lazyNew(JsonRenderer::class));
         $di->set(TextRenderer::class, $di->lazyNew(TextRenderer::class));
+
     }
 
     private function request(Container $di): void
     {
         $di->set(ServerRequestInterface::class, $di->lazy(fn () => ServerRequestFactory::fromGlobals()));
+        $di->types[ServerRequestInterface::class] = $di->lazyGet(ServerRequestInterface::class);
     }
 
     private function requestDispatcher(Container $di): void
@@ -100,16 +101,16 @@ final class DiBinder
 
         $di->params[RequestDispatcher::class]['appMeta'] = $di->lazyGet(AppMeta::class);
         $di->params[RequestDispatcher::class]['di'] = $di->lazy(fn () => $di);
-        $di->params[RequestDispatcher::class]['router'] = $di->lazyGet(RouterInterface::class);
-        $di->params[RequestDispatcher::class]['serverRequest'] = $di->lazyGet(ServerRequestInterface::class);
 
         if (PHP_SAPI === 'cli') {
             $di->set(RouterInterface::class, $di->lazyNew(CliRouter::class));
+            $di->types[RouterInterface::class] = $di->lazyGet(RouterInterface::class);
 
             return;
         }
 
         $di->set(RouterInterface::class, $di->lazyNew(WebRouter::class));
+        $di->types[RouterInterface::class] = $di->lazyGet(RouterInterface::class);
     }
 
     private function responder(Container $di): void
