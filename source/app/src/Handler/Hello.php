@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace MyVendor\MyPackage\Handler;
 
-use MyVendor\MyPackage\RequestHandler\AbstractRequestHandler;
+use MyVendor\MyPackage\AbstractRequestHandler;
 use Stringable;
 
 final class Hello extends AbstractRequestHandler implements Stringable

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace MyVendor\MyPackage\Renderer;
 
-use MyVendor\MyPackage\RequestHandler\AbstractRequestHandler;
+use MyVendor\MyPackage\AbstractRequestHandler;
 use MyVendor\MyPackage\TemplateEngine\QiqRenderer;
 
 final class HtmlRenderer implements RendererInterface

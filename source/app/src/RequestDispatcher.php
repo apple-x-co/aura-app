@@ -15,9 +15,9 @@ use MyVendor\MyPackage\Exception\RuntimeException;
 use MyVendor\MyPackage\Renderer\HtmlRenderer;
 use MyVendor\MyPackage\Renderer\JsonRenderer;
 use MyVendor\MyPackage\Renderer\TextRenderer;
-use MyVendor\MyPackage\RequestHandler\AbstractRequestHandler;
 use MyVendor\MyPackage\Router\RouterInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 
 use function class_exists;
@@ -35,14 +35,13 @@ final class RequestDispatcher
         private readonly AppMeta $appMeta,
         private readonly Container $di,
         private readonly RouterInterface $router,
+        private readonly ServerRequestInterface $serverRequest,
     ) {
     }
 
     public function __invoke(): ResponseInterface|null
     {
-        $origServerRequest = ServerRequestFactory::fromGlobals();
-
-        $routerMatch = $this->router->match($origServerRequest);
+        $routerMatch = $this->router->match($this->serverRequest);
         $route = $routerMatch->route;
         if ($route === false) {
             return new TextResponse(
@@ -52,7 +51,7 @@ final class RequestDispatcher
             );
         }
 
-        $serverRequest = $routerMatch->serverRequest ?? $origServerRequest;
+        $serverRequest = $routerMatch->serverRequest ?? $this->serverRequest;
 
         foreach ($route->attributes as $name => $value) {
             $serverRequest = $serverRequest->withAttribute($name, $value);

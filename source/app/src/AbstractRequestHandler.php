@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MyVendor\MyPackage\RequestHandler;
+namespace MyVendor\MyPackage;
 
 use Koriym\HttpConstants\StatusCode;
 use MyVendor\MyPackage\Renderer\RendererInterface;

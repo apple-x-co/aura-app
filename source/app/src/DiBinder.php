@@ -9,6 +9,7 @@ use Aura\Di\Container;
 use Aura\Di\ContainerBuilder;
 use Aura\Router\RouterContainer;
 use Koriym\QueryLocator\QueryLocator;
+use Laminas\Diactoros\ServerRequestFactory;
 use MyVendor\MyPackage\Renderer\HtmlRenderer;
 use MyVendor\MyPackage\Renderer\JsonRenderer;
 use MyVendor\MyPackage\Renderer\TextRenderer;
@@ -19,6 +20,7 @@ use MyVendor\MyPackage\Router\CliRouter;
 use MyVendor\MyPackage\Router\RouterInterface;
 use MyVendor\MyPackage\Router\WebRouter;
 use MyVendor\MyPackage\TemplateEngine\QiqRenderer;
+use Psr\Http\Message\ServerRequestInterface;
 use Qiq\Template;
 
 use function file_exists;
@@ -38,6 +40,7 @@ final class DiBinder
         $this->appMeta($di, $appDir, $tmpDir);
         $this->queryLocator($di, $appDir);
         $this->renderer($di, $appDir);
+        $this->request($di);
         $this->requestDispatcher($di);
         $this->responder($di);
         $this->router($di, $appDir);
@@ -85,6 +88,11 @@ final class DiBinder
         $di->set(TextRenderer::class, $di->lazyNew(TextRenderer::class));
     }
 
+    private function request(Container $di): void
+    {
+        $di->set(ServerRequestInterface::class, $di->lazy(fn () => ServerRequestFactory::fromGlobals()));
+    }
+
     private function requestDispatcher(Container $di): void
     {
         $di->params[CliRouter::class]['routerContainer'] = $di->lazyGet(RouterContainer::class);
@@ -93,6 +101,7 @@ final class DiBinder
         $di->params[RequestDispatcher::class]['appMeta'] = $di->lazyGet(AppMeta::class);
         $di->params[RequestDispatcher::class]['di'] = $di->lazy(fn () => $di);
         $di->params[RequestDispatcher::class]['router'] = $di->lazyGet(RouterInterface::class);
+        $di->params[RequestDispatcher::class]['serverRequest'] = $di->lazyGet(ServerRequestInterface::class);
 
         if (PHP_SAPI === 'cli') {
             $di->set(RouterInterface::class, $di->lazyNew(CliRouter::class));

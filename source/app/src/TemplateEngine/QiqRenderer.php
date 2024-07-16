@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace MyVendor\MyPackage\TemplateEngine;
 
-use MyVendor\MyPackage\RequestHandler\AbstractRequestHandler;
+use MyVendor\MyPackage\AbstractRequestHandler;
 use Qiq\Template;
 use ReflectionClass;
 

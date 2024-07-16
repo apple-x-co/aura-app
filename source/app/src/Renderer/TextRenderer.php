@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace MyVendor\MyPackage\Renderer;
 
-use MyVendor\MyPackage\RequestHandler\AbstractRequestHandler;
-use Stringable;
+use MyVendor\MyPackage\AbstractRequestHandler;
 
 final class TextRenderer implements RendererInterface
 {
