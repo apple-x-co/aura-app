@@ -10,6 +10,8 @@ use Aura\Di\ContainerBuilder;
 use Aura\Router\RouterContainer;
 use Koriym\QueryLocator\QueryLocator;
 use MyVendor\MyPackage\Renderer\HtmlRenderer;
+use MyVendor\MyPackage\Renderer\JsonRenderer;
+use MyVendor\MyPackage\Renderer\TextRenderer;
 use MyVendor\MyPackage\Responder\CliResponder;
 use MyVendor\MyPackage\Responder\ResponderInterface;
 use MyVendor\MyPackage\Responder\WebResponder;
@@ -129,7 +131,12 @@ final class DiBinder
         $di->params[QiqRenderer::class]['data'] = $di->lazyArray([
             'timestamp' => $di->lazyValue('timestamp'),
         ]);
+        $di->set(QiqRenderer::class, $di->lazyNew(QiqRenderer::class));
 
-        $di->params[HtmlRenderer::class]['qiqRenderer'] = $di->lazyNew(QiqRenderer::class);
+        $di->params[HtmlRenderer::class]['qiqRenderer'] = $di->lazyGet(QiqRenderer::class);
+
+        $di->set(HtmlRenderer::class, $di->lazyNew(HtmlRenderer::class));
+        $di->set(JsonRenderer::class, $di->lazyNew(JsonRenderer::class));
+        $di->set(TextRenderer::class, $di->lazyNew(TextRenderer::class));
     }
 }

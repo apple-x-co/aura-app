@@ -34,7 +34,7 @@ final class RequestDispatcher
     public function __construct(
         private readonly AppMeta $appMeta,
         private readonly Container $di,
-        private readonly RouterInterface $router
+        private readonly RouterInterface $router,
     ) {
     }
 
@@ -100,11 +100,11 @@ final class RequestDispatcher
             if ($renderer === null) {
                 $accepts = $serverRequest->getHeader('accept');
                 if (! empty($accepts) && str_contains($accepts[0], 'text/html')) {
-                    $renderer = $this->di->newInstance(HtmlRenderer::class);
+                    $renderer = $this->di->get(HtmlRenderer::class);
                 } elseif (! empty($accepts) && str_contains($accepts[0], 'application/json')) {
-                    $renderer = $this->di->newInstance(JsonRenderer::class);
+                    $renderer = $this->di->get(JsonRenderer::class);
                 } else {
-                    $renderer = $this->di->newInstance(TextRenderer::class);
+                    $renderer = $this->di->get(TextRenderer::class);
                 }
             }
 
