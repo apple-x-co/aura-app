@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MyVendor\MyPackage\Router;
 
+use Aura\Router\Exception\RouteNotFound;
 use Aura\Router\RouterContainer;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -23,5 +24,14 @@ final class WebRouter implements RouterInterface
             $serverRequest->getUri()->getPath(),
             $matcher->match($serverRequest),
         );
+    }
+
+    public function generate(string $name, array $data = []): string|false
+    {
+        try {
+            return $this->routerContainer->getGenerator()->generate($name, $data);
+        } catch (RouteNotFound) {
+            return false;
+        }
     }
 }
