@@ -37,10 +37,10 @@ final class DiBinder
 
         $this->appMeta($di, $appDir, $tmpDir);
         $this->queryLocator($di, $appDir);
-        $this->responder($di);
-        $this->requestDispatcher($di);
-        $this->router($di, $appDir);
         $this->renderer($di, $appDir);
+        $this->requestDispatcher($di);
+        $this->responder($di);
+        $this->router($di, $appDir);
 
         return $di;
     }
@@ -57,22 +57,32 @@ final class DiBinder
         $di->set(AppMeta::class, $di->lazyNew(AppMeta::class));
     }
 
-    private function responder(Container $di): void
-    {
-        if (PHP_SAPI === 'cli') {
-            $di->set(ResponderInterface::class, $di->lazyNew(CliResponder::class));
-
-            return;
-        }
-
-        $di->set(ResponderInterface::class, $di->lazyNew(WebResponder::class));
-    }
-
     private function queryLocator(Container $di, string $appDir): void
     {
         $di->values['sqlDir'] = $appDir . '/var/sql';
 
         $di->params[QueryLocator::class]['sqlDir'] = $di->lazyValue('sqlDir');
+    }
+
+    private function renderer(Container $di, string $appDir): void
+    {
+        $qiqCachePath = getenv('QIQ_CACHE_PATH');
+
+        $di->params[QiqRenderer::class]['template'] = $di->lazy(fn () => Template::new(
+            [$appDir . '/var/qiq/template'],
+            '.php',
+            empty($qiqCachePath) ? null : $appDir . $qiqCachePath,
+        ));
+        $di->params[QiqRenderer::class]['data'] = $di->lazyArray([
+            'timestamp' => $di->lazyValue('timestamp'),
+        ]);
+        $di->set(QiqRenderer::class, $di->lazyNew(QiqRenderer::class));
+
+        $di->params[HtmlRenderer::class]['qiqRenderer'] = $di->lazyGet(QiqRenderer::class);
+
+        $di->set(HtmlRenderer::class, $di->lazyNew(HtmlRenderer::class));
+        $di->set(JsonRenderer::class, $di->lazyNew(JsonRenderer::class));
+        $di->set(TextRenderer::class, $di->lazyNew(TextRenderer::class));
     }
 
     private function requestDispatcher(Container $di): void
@@ -91,6 +101,17 @@ final class DiBinder
         }
 
         $di->set(RouterInterface::class, $di->lazyNew(WebRouter::class));
+    }
+
+    private function responder(Container $di): void
+    {
+        if (PHP_SAPI === 'cli') {
+            $di->set(ResponderInterface::class, $di->lazyNew(CliResponder::class));
+
+            return;
+        }
+
+        $di->set(ResponderInterface::class, $di->lazyNew(WebResponder::class));
     }
 
     private function router(Container $di, string $appDir): void
@@ -117,26 +138,5 @@ final class DiBinder
         }
 
         $di->set(RouterContainer::class, $di->lazyNew(RouterContainer::class));
-    }
-
-    private function renderer(Container $di, string $appDir): void
-    {
-        $qiqCachePath = getenv('QIQ_CACHE_PATH');
-
-        $di->params[QiqRenderer::class]['template'] = $di->lazy(fn () => Template::new(
-            [$appDir . '/var/qiq/template'],
-            '.php',
-            empty($qiqCachePath) ? null : $appDir . $qiqCachePath,
-        ));
-        $di->params[QiqRenderer::class]['data'] = $di->lazyArray([
-            'timestamp' => $di->lazyValue('timestamp'),
-        ]);
-        $di->set(QiqRenderer::class, $di->lazyNew(QiqRenderer::class));
-
-        $di->params[HtmlRenderer::class]['qiqRenderer'] = $di->lazyGet(QiqRenderer::class);
-
-        $di->set(HtmlRenderer::class, $di->lazyNew(HtmlRenderer::class));
-        $di->set(JsonRenderer::class, $di->lazyNew(JsonRenderer::class));
-        $di->set(TextRenderer::class, $di->lazyNew(TextRenderer::class));
     }
 }
