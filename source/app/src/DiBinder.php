@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MyVendor\MyPackage;
 
+use A;
 use Aura\Di\Container;
 use Aura\Di\ContainerBuilder;
 use Aura\Router\RouterContainer;
@@ -13,6 +14,7 @@ use MyVendor\MyPackage\Responder\CliResponder;
 use MyVendor\MyPackage\Responder\ResponderInterface;
 use MyVendor\MyPackage\Responder\WebResponder;
 use MyVendor\MyPackage\Router\CliRouter;
+use MyVendor\MyPackage\Router\RouterInterface;
 use MyVendor\MyPackage\Router\WebRouter;
 use MyVendor\MyPackage\TemplateEngine\QiqRenderer;
 use Qiq\Template;
@@ -43,25 +45,32 @@ final class DiBinder
 
     private function appMeta(Container $di, string $appDir, string $tmpDir): void
     {
-        $di->params[AppMeta::class]['appDir'] = $appDir;
-        $di->params[AppMeta::class]['tmpDir'] = $tmpDir;
+        $di->values['timestamp'] = time();
+        $di->values['appDir'] = $appDir;
+        $di->values['tmpDir'] = $tmpDir;
+
+        $di->params[AppMeta::class]['appDir'] = $di->lazyValue('appDir');
+        $di->params[AppMeta::class]['tmpDir'] = $di->lazyValue('tmpDir');
+
+        $di->set(AppMeta::class, $di->lazyNew(AppMeta::class));
     }
 
     private function responder(Container $di): void
     {
-        $di->set(
-            ResponderInterface::class,
-            $di->lazy(
-                static fn () => PHP_SAPI === 'cli' ?
-                    $di->newInstance(CliResponder::class) :
-                    $di->newInstance(WebResponder::class),
-            )
-        );
+        if (PHP_SAPI === 'cli') {
+            $di->set(ResponderInterface::class, $di->lazyNew(CliResponder::class));
+
+            return;
+        }
+
+        $di->set(ResponderInterface::class, $di->lazyNew(WebResponder::class));
     }
 
     private function queryLocator(Container $di, string $appDir): void
     {
-        $di->params[QueryLocator::class]['sqlDir'] = $appDir . '/var/sql';
+        $di->values['sqlDir'] = $appDir . '/var/sql';
+
+        $di->params[QueryLocator::class]['sqlDir'] = $di->lazyValue('sqlDir');
     }
 
     private function requestDispatcher(Container $di): void
@@ -69,49 +78,54 @@ final class DiBinder
         $di->params[CliRouter::class]['routerContainer'] = $di->lazyGet(RouterContainer::class);
         $di->params[WebRouter::class]['routerContainer'] = $di->lazyGet(RouterContainer::class);
 
-        $di->params[RequestDispatcher::class]['appMeta'] = $di->lazyNew(AppMeta::class);
+        $di->params[RequestDispatcher::class]['appMeta'] = $di->lazyGet(AppMeta::class);
         $di->params[RequestDispatcher::class]['di'] = $di->lazy(fn () => $di);
-        $di->params[RequestDispatcher::class]['router'] = $di->lazy(
-            static fn () => PHP_SAPI === 'cli' ?
-                $di->newInstance(CliRouter::class) :
-                $di->newInstance(WebRouter::class)
-        );
+        $di->params[RequestDispatcher::class]['router'] = $di->lazyGet(RouterInterface::class);
+
+        if (PHP_SAPI === 'cli') {
+            $di->set(RouterInterface::class, $di->lazyNew(CliRouter::class));
+
+            return;
+        }
+
+        $di->set(RouterInterface::class, $di->lazyNew(WebRouter::class));
     }
 
     private function router(Container $di, string $appDir): void
     {
-        $di->set(
-            RouterContainer::class,
-            $di->lazy(
-                static function () use (&$appDir, $di) {
-                    $router = $di->newInstance(RouterContainer::class);
+        $file = PHP_SAPI === 'cli' ?
+            $appDir . '/var/conf/aura.route.cli.php' :
+            $appDir . '/var/conf/aura.route.web.php';
 
-                    $file = PHP_SAPI === 'cli' ?
-                        $appDir . '/var/conf/aura.route.cli.php' :
-                        $appDir . '/var/conf/aura.route.web.php';
-
-                    if (file_exists($file)) {
+        if (file_exists($file)) {
+            $di->set(
+                RouterContainer::class,
+                $di->lazy(
+                    static function () use ($file) {
+                        $router = new RouterContainer();
                         $map = $router->getMap();
                         require $file;
-                    }
 
-                    return $router;
-                }
-            )
-        );
+                        return $router;
+                    }
+                )
+            );
+
+            return;
+        }
+
+        $di->set(RouterContainer::class, $di->lazyNew(RouterContainer::class));
     }
 
     private function renderer(Container $di, string $appDir): void
     {
         $qiqCachePath = getenv('QIQ_CACHE_PATH');
 
-        // FIXME: "new()" を別の呼び出し方にできないのか?
         $di->params[QiqRenderer::class]['template'] = $di->lazy(fn () => Template::new(
             [$appDir . '/var/qiq/template'],
             '.php',
             empty($qiqCachePath) ? null : $appDir . $qiqCachePath,
         ));
-        $di->values['timestamp'] = $di->lazy(fn () => time());
         $di->params[QiqRenderer::class]['data'] = $di->lazyArray([
             'timestamp' => $di->lazyValue('timestamp'),
         ]);
