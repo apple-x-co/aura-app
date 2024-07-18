@@ -75,6 +75,10 @@ final class RequestDispatcher
             throw new RuntimeException('Route handler "' . $routeHandler . '" not found.');
         }
 
+        if ($route->auth['admin'] ?? false) {
+            // TODO: Check ADMIN authentication
+        }
+
         $action = sprintf('on%s', ucfirst(strtolower($routerMatch->method)));
         if (! method_exists($object, $action)) {
             throw new RuntimeException('Method not allowed.');
