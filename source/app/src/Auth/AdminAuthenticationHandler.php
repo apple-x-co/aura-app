@@ -20,15 +20,22 @@ final class AdminAuthenticationHandler implements AdminAuthenticationHandlerInte
 
     public function __invoke(Route $route): ResponseInterface|null
     {
-        $isAdmin = is_array($route->auth) &&
+        if (! $this->isAdminGuard($route)) {
+            return null;
+        }
+
+        if ($this->adminAuthenticator->isValid()) {
+            return null;
+        }
+
+        return new RedirectResponse($this->adminAuthenticator->getUnauthRedirect());
+    }
+
+    private function isAdminGuard(Route $route): bool
+    {
+        return is_array($route->auth) &&
             isset($route->auth['admin']) &&
             is_bool($route->auth['admin']) &&
             $route->auth['admin'];
-
-        if ($isAdmin && ! $this->adminAuthenticator->isValid()) {
-            return new RedirectResponse($this->adminAuthenticator->getUnauthRedirect());
-        }
-
-        return null;
     }
 }

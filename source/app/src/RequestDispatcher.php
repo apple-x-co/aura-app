@@ -77,9 +77,9 @@ final class RequestDispatcher
             throw new RuntimeException('Route handler "' . $routeHandler . '" not found.');
         }
 
-        $authenticationResponse = ($this->adminAuthenticationHandler)($route);
-        if ($authenticationResponse !== null) {
-            return $authenticationResponse;
+        $adminAuthenticationResponse = ($this->adminAuthenticationHandler)($route);
+        if ($adminAuthenticationResponse !== null) {
+            return $adminAuthenticationResponse;
         }
 
         $action = sprintf('on%s', ucfirst(strtolower($routerMatch->method)));
