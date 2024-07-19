@@ -12,6 +12,7 @@ use Koriym\QueryLocator\QueryLocator;
 use Laminas\Diactoros\ServerRequestFactory;
 use MyVendor\MyPackage\Auth\AdminAuthenticationHandler;
 use MyVendor\MyPackage\Auth\AdminAuthenticator;
+use MyVendor\MyPackage\Auth\AdminAuthenticatorInterface;
 use MyVendor\MyPackage\Renderer\HtmlRenderer;
 use MyVendor\MyPackage\Renderer\JsonRenderer;
 use MyVendor\MyPackage\Renderer\TextRenderer;
@@ -74,8 +75,11 @@ final class DiBinder
         $di->params[AdminAuthenticator::class]['pdoDsn'] = $di->lazyValue('pdoDsn');
         $di->params[AdminAuthenticator::class]['pdoUsername'] = $di->lazyValue('pdoUsername');
         $di->params[AdminAuthenticator::class]['pdoPassword'] = $di->lazyValue('pdoPassword');
+        $di->set(AdminAuthenticator::class, $di->lazyNew(AdminAuthenticator::class));
 
-        $di->params[AdminAuthenticationHandler::class]['adminAuthenticator'] = $di->lazyNew(AdminAuthenticator::class);
+        $di->params[AdminAuthenticationHandler::class]['adminAuthenticator'] = $di->lazyGet(AdminAuthenticator::class);
+
+        $di->types[AdminAuthenticatorInterface::class] = $di->lazyGet(AdminAuthenticator::class);
     }
 
     private function queryLocator(Container $di, string $appDir): void

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Aura\Router\Map;
 use MyVendor\MyPackage\Handler;
+use MyVendor\MyPackage\Handler\Admin as AdminHandler;
 
 /* @var Map $map */
 
@@ -15,10 +16,16 @@ $map->attach(null, null, function (Map $map) {
 });
 
 $map->attach('admin:', '/admin', function (Map $map) {
-    $map->auth(['admin' => true]);
+    $auth = ['admin' => true];
+    $map->auth($auth);
 
-    $map->get('login', '/login', Handler\Admin\Login::class)
-        ->auth(['admin' => false]);
+    $map->route('login', '/login', AdminHandler\Login::class)
+        ->auth(array_merge($auth, ['admin' => false, 'adminLogin' => true]));
 
-    $map->get('hello', '/hello', Handler\Admin\Hello::class);
+    $map->post('logout', '/logout', AdminHandler\Logout::class)
+        ->auth(array_merge($auth, ['adminLogout' => true]));
+
+    $map->get('index', '/index', AdminHandler\Index::class);
+
+    $map->get('hello', '/hello', AdminHandler\Hello::class);
 });

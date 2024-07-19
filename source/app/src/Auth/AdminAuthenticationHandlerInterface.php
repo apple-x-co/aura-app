@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace MyVendor\MyPackage\Auth;
 
-use Aura\Router\Route;
+use MyVendor\MyPackage\Router\RouterMatch;
 use Psr\Http\Message\ResponseInterface;
 
 interface AdminAuthenticationHandlerInterface
 {
-    public function __invoke(Route $route): ResponseInterface|null;
+    public function __invoke(RouterMatch $routerMatch): ResponseInterface|null;
 }
