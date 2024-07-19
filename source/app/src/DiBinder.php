@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace MyVendor\MyPackage;
 
+use AppCore\Domain\Hasher\PasswordHasher;
 use Aura\Di\Container;
 use Aura\Di\ContainerBuilder;
 use Aura\Router\RouterContainer;
 use Koriym\QueryLocator\QueryLocator;
 use Laminas\Diactoros\ServerRequestFactory;
+use MyVendor\MyPackage\Auth\AdminAuthenticationHandler;
+use MyVendor\MyPackage\Auth\AdminAuthenticator;
 use MyVendor\MyPackage\Renderer\HtmlRenderer;
 use MyVendor\MyPackage\Renderer\JsonRenderer;
 use MyVendor\MyPackage\Renderer\TextRenderer;
@@ -37,7 +40,13 @@ final class DiBinder
         $builder = new ContainerBuilder();
         $di = $builder->newInstance(true); // NOTE: "$di->types['xxx']" を使うために有効化
 
+        $di->values['timestamp'] = time();
+        $di->values['pdoDsn'] = getenv('DB_DSN');
+        $di->values['pdoUsername'] = getenv('DB_USER');
+        $di->values['pdoPassword'] = getenv('DB_PASS');
+
         $this->appMeta($di, $appDir, $tmpDir);
+        $this->authentication($di);
         $this->queryLocator($di, $appDir);
         $this->renderer($di, $appDir);
         $this->request($di);
@@ -50,7 +59,6 @@ final class DiBinder
 
     private function appMeta(Container $di, string $appDir, string $tmpDir): void
     {
-        $di->values['timestamp'] = time();
         $di->values['appDir'] = $appDir;
         $di->values['tmpDir'] = $tmpDir;
 
@@ -58,6 +66,16 @@ final class DiBinder
         $di->params[AppMeta::class]['tmpDir'] = $di->lazyValue('tmpDir');
 
         $di->set(AppMeta::class, $di->lazyNew(AppMeta::class));
+    }
+
+    private function authentication(Container $di): void
+    {
+        $di->params[AdminAuthenticator::class]['passwordHasher'] = $di->lazyNew(PasswordHasher::class);
+        $di->params[AdminAuthenticator::class]['pdoDsn'] = $di->lazyValue('pdoDsn');
+        $di->params[AdminAuthenticator::class]['pdoUsername'] = $di->lazyValue('pdoUsername');
+        $di->params[AdminAuthenticator::class]['pdoPassword'] = $di->lazyValue('pdoPassword');
+
+        $di->params[AdminAuthenticationHandler::class]['adminAuthenticator'] = $di->lazyNew(AdminAuthenticator::class);
     }
 
     private function queryLocator(Container $di, string $appDir): void
@@ -104,6 +122,7 @@ final class DiBinder
         $di->params[CliRouter::class]['routerContainer'] = $di->lazyGet(RouterContainer::class);
         $di->params[WebRouter::class]['routerContainer'] = $di->lazyGet(RouterContainer::class);
 
+        $di->params[RequestDispatcher::class]['adminAuthenticationHandler'] = $di->lazyNew(AdminAuthenticationHandler::class);
         $di->params[RequestDispatcher::class]['di'] = $di->lazy(static fn () => $di);
 
         if (PHP_SAPI === 'cli') {

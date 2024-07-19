@@ -26,6 +26,7 @@ final class WebRouter implements RouterInterface
         );
     }
 
+    /** @param array<string, string|int> $data */
     public function generate(string $name, array $data = []): string|false
     {
         try {

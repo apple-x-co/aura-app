@@ -9,6 +9,7 @@ use Koriym\HttpConstants\StatusCode;
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Laminas\Diactoros\Response\TextResponse;
+use MyVendor\MyPackage\Auth\AdminAuthenticationHandler;
 use MyVendor\MyPackage\Exception\RuntimeException;
 use MyVendor\MyPackage\Renderer\HtmlRenderer;
 use MyVendor\MyPackage\Renderer\JsonRenderer;
@@ -30,6 +31,7 @@ use function ucfirst;
 final class RequestDispatcher
 {
     public function __construct(
+        private readonly AdminAuthenticationHandler $adminAuthenticationHandler,
         private readonly Container $di,
         private readonly RouterInterface $router,
         private readonly ServerRequestInterface $serverRequest,
@@ -75,8 +77,9 @@ final class RequestDispatcher
             throw new RuntimeException('Route handler "' . $routeHandler . '" not found.');
         }
 
-        if ($route->auth['admin'] ?? false) {
-            // TODO: Check ADMIN authentication
+        $authenticationResponse = ($this->adminAuthenticationHandler)($route);
+        if ($authenticationResponse !== null) {
+            return $authenticationResponse;
         }
 
         $action = sprintf('on%s', ucfirst(strtolower($routerMatch->method)));
