@@ -92,7 +92,7 @@ final class RequestDispatcher
         }
 
         try {
-            $object = $object->$action($serverRequest, $route->extras);
+            $object = $object->$action(); // NOTE: ServerRequest や Route の取得は "Typehinted constructor" を使う
             if (! $object instanceof RequestHandler) {
                 throw new RuntimeException('Invalid response type.');
             }
