@@ -53,7 +53,7 @@ final class RequestDispatcher
             );
         }
 
-        $serverRequest = $routerMatch->serverRequest ?? $this->serverRequest;
+        $serverRequest = $routerMatch->serverRequest;
 
         foreach ($route->attributes as $name => $value) {
             $serverRequest = $serverRequest->withAttribute($name, $value);
@@ -88,7 +88,7 @@ final class RequestDispatcher
         }
 
         try {
-            $object = $object->$action($routerMatch->serverRequest ?? $serverRequest);
+            $object = $object->$action($serverRequest, $route->extras);
             if (! $object instanceof RequestHandler) {
                 throw new RuntimeException('Invalid response type.');
             }
@@ -104,9 +104,11 @@ final class RequestDispatcher
             $renderer = $object->renderer;
             if ($renderer === null) {
                 $accepts = $serverRequest->getHeader('accept');
-                if (! empty($accepts) && str_contains($accepts[0], 'text/html')) {
+                $isHtml = ! empty($accepts) && str_contains($accepts[0], 'text/html');
+                $isJson = ! empty($accepts) && str_contains($accepts[0], 'application/json');
+                if ($isHtml) {
                     $renderer = $this->htmlRenderer;
-                } elseif (! empty($accepts) && str_contains($accepts[0], 'application/json')) {
+                } elseif ($isJson) {
                     $renderer = $this->jsonRenderer;
                 } else {
                     $renderer = $this->textRenderer;

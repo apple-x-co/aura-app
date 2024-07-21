@@ -29,10 +29,13 @@ final class AdminAuthenticationHandler implements AdminAuthenticationHandlerInte
         }
 
         if ($this->isPostLogin($routerMatch)) {
+            $body = $routerMatch->serverRequest->getParsedBody();
+            $username = $body['username'] ?? '';
+            $password = $body['password'] ?? '';
             try {
-                $this->adminAuthenticator->login('admin', 'p@ssw0rd'); // TODO
+                $this->adminAuthenticator->login($username, $password);
             } catch (Throwable) {
-                return new RedirectResponse($this->adminAuthenticator->getUnauthRedirect());
+                return new RedirectResponse($this->adminAuthenticator->getUnauthRedirect() . '?login=failed');
             }
 
             return new RedirectResponse($this->adminAuthenticator->getAuthRedirect());
@@ -40,7 +43,7 @@ final class AdminAuthenticationHandler implements AdminAuthenticationHandlerInte
 
         $isValid = $this->adminAuthenticator->isValid();
         if (! $isValid) {
-            return new RedirectResponse($this->adminAuthenticator->getUnauthRedirect());
+            return new RedirectResponse($this->adminAuthenticator->getUnauthRedirect() . '?login=invalid');
         }
 
         if ($this->isPostLogout($routerMatch)) {

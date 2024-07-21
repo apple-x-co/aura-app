@@ -3,6 +3,8 @@
 <body>
 <h1>Login</h1>
 <form method="post">
+    <input type="text" name="username" value="" required minlength="5" placeholder="username">
+    <input type="password" name="password" value="" required minlength="5" placeholder="password">
     <button>Login</button>
 </form>
 </body>
