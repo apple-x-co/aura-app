@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace MyVendor\MyPackage;
 
+use Aura\Accept\Accept;
 use Aura\Di\Container;
+use Koriym\HttpConstants\MediaType;
 use Koriym\HttpConstants\StatusCode;
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\Response\RedirectResponse;
@@ -13,6 +15,7 @@ use MyVendor\MyPackage\Auth\AdminAuthenticationHandler;
 use MyVendor\MyPackage\Exception\RuntimeException;
 use MyVendor\MyPackage\Renderer\HtmlRenderer;
 use MyVendor\MyPackage\Renderer\JsonRenderer;
+use MyVendor\MyPackage\Renderer\RendererInterface;
 use MyVendor\MyPackage\Renderer\TextRenderer;
 use MyVendor\MyPackage\Router\RouterInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -31,6 +34,7 @@ use function ucfirst;
 final class RequestDispatcher
 {
     public function __construct(
+        private readonly Accept $accept,
         private readonly AdminAuthenticationHandler $adminAuthenticationHandler,
         private readonly Container $di,
         private readonly RouterInterface $router,
@@ -101,19 +105,7 @@ final class RequestDispatcher
                 );
             }
 
-            $renderer = $object->renderer;
-            if ($renderer === null) {
-                $accepts = $serverRequest->getHeader('accept');
-                $isHtml = ! empty($accepts) && str_contains($accepts[0], 'text/html');
-                $isJson = ! empty($accepts) && str_contains($accepts[0], 'application/json');
-                if ($isHtml) {
-                    $renderer = $this->htmlRenderer;
-                } elseif ($isJson) {
-                    $renderer = $this->jsonRenderer;
-                } else {
-                    $renderer = $this->textRenderer;
-                }
-            }
+            $renderer = $object->renderer ?? $this->getRenderer();
 
             $response = new Response();
             $response->getBody()->write($renderer->render($object));
@@ -131,5 +123,24 @@ final class RequestDispatcher
         }
 
         return $response;
+    }
+
+    private function getRenderer(): RendererInterface
+    {
+        $media = $this->accept->negotiateMedia([
+            MediaType::TEXT_HTML,
+            MediaType::APPLICATION_JSON,
+            MediaType::TEXT_PLAIN,
+        ]);
+
+        if ($media->getValue() === MediaType::TEXT_HTML) {
+            return $this->htmlRenderer;
+        }
+
+        if ($media->getValue() === MediaType::APPLICATION_JSON) {
+            return $this->jsonRenderer;
+        }
+
+        return $this->textRenderer;
     }
 }

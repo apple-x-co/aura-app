@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace MyVendor\MyPackage;
 
 use AppCore\Domain\Hasher\PasswordHasher;
+use Aura\Accept\Accept;
+use Aura\Accept\AcceptFactory;
 use Aura\Di\Container;
 use Aura\Di\ContainerBuilder;
 use Aura\Router\RouterContainer;
@@ -117,8 +119,9 @@ final class DiBinder
     private function request(Container $di): void
     {
         $di->set(ServerRequestInterface::class, $di->lazy(static fn () => ServerRequestFactory::fromGlobals()));
-
         $di->types[ServerRequestInterface::class] = $di->lazyGet(ServerRequestInterface::class);
+
+        $di->set(Accept::class, $di->lazy(static fn () => (new AcceptFactory($_SERVER))->newInstance()));
     }
 
     private function requestDispatcher(Container $di): void
@@ -128,16 +131,17 @@ final class DiBinder
 
         $di->params[RequestDispatcher::class]['adminAuthenticationHandler'] = $di->lazyNew(AdminAuthenticationHandler::class);
         $di->params[RequestDispatcher::class]['di'] = $di->lazy(static fn () => $di);
+        $di->params[RequestDispatcher::class]['accept'] = $di->lazyGet(Accept::class);
+
+        $di->types[RouterInterface::class] = $di->lazyGet(RouterInterface::class);
 
         if (PHP_SAPI === 'cli') {
             $di->set(RouterInterface::class, $di->lazyNew(CliRouter::class));
-            $di->types[RouterInterface::class] = $di->lazyGet(RouterInterface::class);
 
             return;
         }
 
         $di->set(RouterInterface::class, $di->lazyNew(WebRouter::class));
-        $di->types[RouterInterface::class] = $di->lazyGet(RouterInterface::class);
     }
 
     private function responder(Container $di): void
