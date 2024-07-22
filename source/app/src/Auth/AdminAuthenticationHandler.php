@@ -34,7 +34,7 @@ final class AdminAuthenticationHandler implements AdminAuthenticationHandlerInte
         }
 
         if ($this->isPostLogin($routerMatch)) {
-            $body = $routerMatch->serverRequest->getParsedBody();
+            $body = (array) $routerMatch->serverRequest->getParsedBody();
             $username = $body['username'] ?? '';
             $password = $body['password'] ?? '';
             try {
@@ -53,7 +53,7 @@ final class AdminAuthenticationHandler implements AdminAuthenticationHandlerInte
                     throw $throwable;
                 }
 
-                throw new $class;
+                throw new $class();
             }
 
             return new RedirectResponse($this->adminAuthenticator->getAuthRedirect());

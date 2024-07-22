@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MyVendor\MyPackage;
 
 use Aura\Accept\Accept;
+use Aura\Accept\Media\MediaValue;
 use Aura\Di\Container;
 use Koriym\HttpConstants\MediaType;
 use Koriym\HttpConstants\StatusCode;
@@ -12,6 +13,7 @@ use Laminas\Diactoros\Response;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Laminas\Diactoros\Response\TextResponse;
 use MyVendor\MyPackage\Auth\AdminAuthenticationHandler;
+use MyVendor\MyPackage\Auth\AuthenticationException;
 use MyVendor\MyPackage\Renderer\HtmlRenderer;
 use MyVendor\MyPackage\Renderer\JsonRenderer;
 use MyVendor\MyPackage\Renderer\RendererInterface;
@@ -20,17 +22,16 @@ use MyVendor\MyPackage\Router\InvalidResponseException;
 use MyVendor\MyPackage\Router\RouteHandlerMethodNotAllowedException;
 use MyVendor\MyPackage\Router\RouteHandlerNotFoundException;
 use MyVendor\MyPackage\Router\RouterInterface;
-use MyVendor\MyPackage\Auth\AuthenticationException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 
+use function assert;
 use function class_exists;
 use function is_callable;
 use function is_string;
 use function method_exists;
 use function sprintf;
-use function str_contains;
 use function strtolower;
 use function ucfirst;
 
@@ -92,6 +93,7 @@ final class RequestDispatcher
             }
 
             $renderer = $object->renderer ?? $this->getRenderer();
+            assert($renderer instanceof RendererInterface);
 
             $response = new Response();
             $response->getBody()->write($renderer->render($object));
@@ -153,11 +155,17 @@ final class RequestDispatcher
             MediaType::TEXT_PLAIN,
         ]);
 
-        if ($media->getValue() === MediaType::TEXT_HTML) {
+        if (
+            $media instanceof MediaValue &&
+            $media->getValue() === MediaType::TEXT_HTML
+        ) {
             return $this->htmlRenderer;
         }
 
-        if ($media->getValue() === MediaType::APPLICATION_JSON) {
+        if (
+            $media instanceof MediaValue &&
+            $media->getValue() === MediaType::APPLICATION_JSON
+        ) {
             return $this->jsonRenderer;
         }
 
