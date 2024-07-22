@@ -12,7 +12,6 @@ use Aura\Auth\Service\LoginService;
 use Aura\Auth\Service\LogoutService;
 use Aura\Auth\Service\ResumeService;
 use Aura\Auth\Verifier\PasswordVerifier;
-use MyVendor\MyProject\Auth\UnauthorizedException;
 use PDO;
 
 use function assert;

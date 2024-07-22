@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace MyVendor\MyPackage\Auth;
 
+use Aura\Auth\Exception\MultipleMatches as AuraMultipleMatches;
+use Aura\Auth\Exception\PasswordIncorrect as AuraPasswordIncorrect;
+use Aura\Auth\Exception\PasswordMissing as AuraPasswordMissing;
+use Aura\Auth\Exception\UsernameMissing as AuraUsernameMissing;
+use Aura\Auth\Exception\UsernameNotFound as AuraUsernameNotFound;
 use Laminas\Diactoros\Response\RedirectResponse;
 use MyVendor\MyPackage\Router\RouterMatch;
 use Psr\Http\Message\ResponseInterface;
@@ -34,8 +39,21 @@ final class AdminAuthenticationHandler implements AdminAuthenticationHandlerInte
             $password = $body['password'] ?? '';
             try {
                 $this->adminAuthenticator->login($username, $password);
-            } catch (Throwable) {
-                return new RedirectResponse($this->adminAuthenticator->getUnauthRedirect() . '?login=failed');
+            } catch (Throwable $throwable) {
+                $class = match ($throwable::class) {
+                    AuraUsernameMissing::class => UsernameMissing::class,
+                    AuraPasswordMissing::class => PasswordMissing::class,
+                    AuraUsernameNotFound::class => UsernameNotFound::class,
+                    AuraMultipleMatches::class => MultipleMatches::class,
+                    AuraPasswordIncorrect::class => PasswordIncorrect::class,
+                    default => null,
+                };
+
+                if ($class === null) {
+                    throw $throwable;
+                }
+
+                throw new $class;
             }
 
             return new RedirectResponse($this->adminAuthenticator->getAuthRedirect());
@@ -43,7 +61,7 @@ final class AdminAuthenticationHandler implements AdminAuthenticationHandlerInte
 
         $isValid = $this->adminAuthenticator->isValid();
         if (! $isValid) {
-            return new RedirectResponse($this->adminAuthenticator->getUnauthRedirect() . '?login=invalid');
+            return new RedirectResponse($this->adminAuthenticator->getUnauthRedirect());
         }
 
         if ($this->isPostLogout($routerMatch)) {

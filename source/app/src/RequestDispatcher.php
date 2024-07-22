@@ -20,6 +20,7 @@ use MyVendor\MyPackage\Router\InvalidResponseException;
 use MyVendor\MyPackage\Router\RouteHandlerMethodNotAllowedException;
 use MyVendor\MyPackage\Router\RouteHandlerNotFoundException;
 use MyVendor\MyPackage\Router\RouterInterface;
+use MyVendor\MyPackage\Auth\AuthenticationException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
@@ -83,7 +84,24 @@ final class RequestDispatcher
             throw new RouteHandlerNotFoundException('Route handler "' . $routeHandler . '" not found.');
         }
 
-        $adminAuthenticationResponse = ($this->adminAuthenticationHandler)($routerMatch);
+        try {
+            $adminAuthenticationResponse = ($this->adminAuthenticationHandler)($routerMatch);
+        } catch (AuthenticationException $authenticationException) {
+            if (method_exists($object, 'onAuthenticationFailed')) {
+                $object = $object->onAuthenticationFailed($authenticationException);
+            }
+
+            $renderer = $object->renderer ?? $this->getRenderer();
+
+            $response = new Response();
+            $response->getBody()->write($renderer->render($object));
+            foreach ($object->headers as $name => $value) {
+                $response = $response->withHeader($name, $value);
+            }
+
+            return $response->withStatus($object->code);
+        }
+
         if ($adminAuthenticationResponse !== null) {
             return $adminAuthenticationResponse;
         }
