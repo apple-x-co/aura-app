@@ -6,7 +6,6 @@ namespace MyVendor\MyPackage\Router;
 
 use Aura\Router\Exception\RouteNotFound;
 use Aura\Router\RouterContainer;
-use MyVendor\MyPackage\Exception\RuntimeException;
 use Psr\Http\Message\ServerRequestInterface;
 
 use function in_array;
@@ -83,7 +82,7 @@ final class WebRouter implements RouterInterface
 
         $error = json_last_error();
         if ($error !== JSON_ERROR_NONE) {
-            throw new RuntimeException(json_last_error_msg());
+            throw new InvalidRequestException(json_last_error_msg());
         }
 
         return $serverRequest->withParsedBody($parsedBody);
