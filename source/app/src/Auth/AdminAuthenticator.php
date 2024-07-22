@@ -12,7 +12,7 @@ use Aura\Auth\Service\LoginService;
 use Aura\Auth\Service\LogoutService;
 use Aura\Auth\Service\ResumeService;
 use Aura\Auth\Verifier\PasswordVerifier;
-use MyVendor\MyPackage\Exception\RuntimeException;
+use MyVendor\MyProject\Auth\UnauthorizedException;
 use PDO;
 
 use function assert;
@@ -170,7 +170,7 @@ class AdminAuthenticator implements AdminAuthenticatorInterface
     {
         $auth = $this->auth();
         if (! $auth->isValid()) {
-            throw new RuntimeException('Unauthenticated');
+            throw new UnauthorizedException();
         }
 
         $userData = $auth->getUserData();

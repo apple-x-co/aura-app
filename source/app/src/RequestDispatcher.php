@@ -12,11 +12,13 @@ use Laminas\Diactoros\Response;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Laminas\Diactoros\Response\TextResponse;
 use MyVendor\MyPackage\Auth\AdminAuthenticationHandler;
-use MyVendor\MyPackage\Exception\RuntimeException;
 use MyVendor\MyPackage\Renderer\HtmlRenderer;
 use MyVendor\MyPackage\Renderer\JsonRenderer;
 use MyVendor\MyPackage\Renderer\RendererInterface;
 use MyVendor\MyPackage\Renderer\TextRenderer;
+use MyVendor\MyPackage\Router\InvalidResponseException;
+use MyVendor\MyPackage\Router\RouteHandlerMethodNotAllowedException;
+use MyVendor\MyPackage\Router\RouteHandlerNotFoundException;
 use MyVendor\MyPackage\Router\RouterInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -73,12 +75,12 @@ final class RequestDispatcher
         }
 
         if (! class_exists($routeHandler)) {
-            throw new RuntimeException('Route handler "' . $routeHandler . '" not found.');
+            throw new RouteHandlerNotFoundException('Route handler "' . $routeHandler . '" not found.');
         }
 
         $object = $this->di->newInstance($routeHandler);
         if (! $object instanceof RequestHandler) {
-            throw new RuntimeException('Route handler "' . $routeHandler . '" not found.');
+            throw new RouteHandlerNotFoundException('Route handler "' . $routeHandler . '" not found.');
         }
 
         $adminAuthenticationResponse = ($this->adminAuthenticationHandler)($routerMatch);
@@ -88,13 +90,13 @@ final class RequestDispatcher
 
         $action = sprintf('on%s', ucfirst(strtolower($routerMatch->method)));
         if (! method_exists($object, $action)) {
-            throw new RuntimeException('Method not allowed.');
+            throw new RouteHandlerMethodNotAllowedException('Method not allowed.');
         }
 
         try {
             $object = $object->$action(); // NOTE: ServerRequest や Route の取得は "Typehinted constructor" を使う
             if (! $object instanceof RequestHandler) {
-                throw new RuntimeException('Invalid response type.');
+                throw new InvalidResponseException('Invalid response type.');
             }
 
             if (isset($object->headers['location'])) {
