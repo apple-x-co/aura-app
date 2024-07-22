@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace MyVendor\MyPackage\Exception;
 
-class RuntimeException extends \RuntimeException
+use RuntimeException as PhpRuntimeException;
+
+class RuntimeException extends PhpRuntimeException
 {
 }

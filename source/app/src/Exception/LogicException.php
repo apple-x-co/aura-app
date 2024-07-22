@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace MyVendor\MyPackage\Exception;
 
-class LogicException extends \LogicException
+use LogicException as PhpLogicException;
+
+class LogicException extends PhpLogicException
 {
 }
