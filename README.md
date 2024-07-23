@@ -23,6 +23,21 @@ Aura.PHP application
 * ID & password login
 * Flash message
 
+### Architecture
+
+```mermaid
+sequenceDiagram
+    Bootstrap ->> RequestDispatcher: Call "__invoke"
+    RequestDispatcher ->> RequestDispatcher: Get "RequestHandler"
+    RequestDispatcher ->> CloudflareTurnstileVerificationHandler: Call "__invoke"
+    RequestDispatcher ->> AdminAuthenticationHandler: Call "__invoke"
+    RequestDispatcher ->> RequestHandler: Call "onGet" or "onPost"
+    RequestHandler -->> RequestDispatcher: Return "RequestHandler"
+    RequestDispatcher ->> RequestDispatcher: Get "RendererInterface"
+    RequestDispatcher ->> Response: Get "ResponseInterface"
+    RequestDispatcher -->> Bootstrap: Return "ResponseInterface"
+```
+
 ## Execute on CLI
 
 ```bash
