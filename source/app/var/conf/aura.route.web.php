@@ -20,13 +20,13 @@ $map->attach('admin:', '/admin', function (Map $map) {
     $map->auth($auth);
 
     $map->get('login', '/login', AdminHandler\Login::class)
-        ->auth(array_merge($auth, ['adminLogin' => true]));
+        ->auth([]);
 
     $map->post('_login', '/login', AdminHandler\Login::class)
-        ->auth(array_merge($auth, ['adminLogin' => true, 'cfTurnstile' => true]));
+        ->auth(['login' => true, 'cfTurnstile' => true]);
 
     $map->post('logout', '/logout', AdminHandler\Logout::class)
-        ->auth(array_merge($auth, ['adminLogout' => true]));
+        ->auth(array_merge($auth, ['logout' => true]));
 
     $map->get('index', '/index', AdminHandler\Index::class);
 

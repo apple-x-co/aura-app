@@ -26,14 +26,7 @@ final class AdminAuthenticationHandler implements AdminAuthenticationHandlerInte
 
     public function __invoke(RouterMatch $routerMatch): ResponseInterface|null
     {
-        if (
-            ! $this->isAdmin($routerMatch) ||
-            $this->isGetLogin($routerMatch)
-        ) {
-            return null;
-        }
-
-        if ($this->isPostLogin($routerMatch)) {
+        if ($this->isLogin($routerMatch)) {
             $body = (array) $routerMatch->serverRequest->getParsedBody();
             $username = $body['username'] ?? '';
             $password = $body['password'] ?? '';
@@ -59,12 +52,16 @@ final class AdminAuthenticationHandler implements AdminAuthenticationHandlerInte
             return new RedirectResponse($this->adminAuthenticator->getAuthRedirect());
         }
 
+        if (! $this->isAdmin($routerMatch)) {
+            return null;
+        }
+
         $isValid = $this->adminAuthenticator->isValid();
         if (! $isValid) {
             return new RedirectResponse($this->adminAuthenticator->getUnauthRedirect());
         }
 
-        if ($this->isPostLogout($routerMatch)) {
+        if ($this->isLogout($routerMatch)) {
             $this->adminAuthenticator->logout();
 
             return new RedirectResponse($this->adminAuthenticator->getUnauthRedirect());
@@ -87,7 +84,7 @@ final class AdminAuthenticationHandler implements AdminAuthenticationHandlerInte
             $auth['admin'];
     }
 
-    private function isGetLogin(RouterMatch $routerMatch): bool
+    private function isLogin(RouterMatch $routerMatch): bool
     {
         if ($routerMatch->route === false) {
             return false;
@@ -96,13 +93,12 @@ final class AdminAuthenticationHandler implements AdminAuthenticationHandlerInte
         $auth = $routerMatch->route->auth;
 
         return is_array($auth) &&
-            isset($auth['adminLogin']) &&
-            is_bool($auth['adminLogin']) &&
-            $auth['adminLogin'] &&
-            $routerMatch->method === 'GET';
+            isset($auth['login']) &&
+            is_bool($auth['login']) &&
+            $auth['login'];
     }
 
-    private function isPostLogin(RouterMatch $routerMatch): bool
+    private function isLogout(RouterMatch $routerMatch): bool
     {
         if ($routerMatch->route === false) {
             return false;
@@ -111,24 +107,8 @@ final class AdminAuthenticationHandler implements AdminAuthenticationHandlerInte
         $auth = $routerMatch->route->auth;
 
         return is_array($auth) &&
-            isset($auth['adminLogin']) &&
-            is_bool($auth['adminLogin']) &&
-            $auth['adminLogin'] &&
-            $routerMatch->method === 'POST';
-    }
-
-    private function isPostLogout(RouterMatch $routerMatch): bool
-    {
-        if ($routerMatch->route === false) {
-            return false;
-        }
-
-        $auth = $routerMatch->route->auth;
-
-        return is_array($auth) &&
-            isset($auth['adminLogout']) &&
-            is_bool($auth['adminLogout']) &&
-            $auth['adminLogout'] &&
-            $routerMatch->method === 'POST';
+            isset($auth['logout']) &&
+            is_bool($auth['logout']) &&
+            $auth['logout'];
     }
 }
