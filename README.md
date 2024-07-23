@@ -33,7 +33,7 @@ sequenceDiagram
     RequestDispatcher ->> AdminAuthenticationHandler: Call "__invoke"
     RequestDispatcher ->> RequestHandler: Call "onGet" or "onPost"
     RequestHandler -->> RequestDispatcher: Return "RequestHandler"
-    RequestDispatcher ->> RequestDispatcher: Get "RendererInterface"
+    RequestDispatcher ->> RequestDispatcher: Get "RendererInterface" ("Json" or "HTML" or "TEXT")
     RequestDispatcher ->> Response: Get "ResponseInterface"
     RequestDispatcher -->> Bootstrap: Return "ResponseInterface"
 ```
