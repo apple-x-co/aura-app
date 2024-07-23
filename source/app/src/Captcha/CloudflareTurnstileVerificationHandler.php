@@ -9,6 +9,10 @@ use Laminas\Http\Client\Adapter\Socket as LaminasSocket;
 use Laminas\Http\Request;
 use MyVendor\MyPackage\Router\RouterMatch;
 
+use function is_array;
+use function is_bool;
+use function json_decode;
+
 use const JSON_THROW_ON_ERROR;
 
 final class CloudflareTurnstileVerificationHandler implements CloudflareTurnstileVerificationHandlerInterface
@@ -37,7 +41,7 @@ final class CloudflareTurnstileVerificationHandler implements CloudflareTurnstil
             [
                 'maxredirects' => 0,
                 'timeout' => 30,
-            ]
+            ],
         );
         $client->setMethod(Request::METHOD_POST);
         $client->setParameterPost([

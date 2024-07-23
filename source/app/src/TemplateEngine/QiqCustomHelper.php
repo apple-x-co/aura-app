@@ -6,6 +6,9 @@ namespace MyVendor\MyPackage\TemplateEngine;
 
 use Qiq\Helper\Html\HtmlHelpers;
 
+use function is_string;
+use function sprintf;
+
 final class QiqCustomHelper extends HtmlHelpers
 {
     public function __construct(

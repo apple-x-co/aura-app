@@ -30,6 +30,7 @@ use MyVendor\MyPackage\TemplateEngine\QiqRenderer;
 use Psr\Http\Message\ServerRequestInterface;
 use Qiq\Template;
 
+use function assert;
 use function file_exists;
 use function getenv;
 use function is_string;
@@ -96,14 +97,19 @@ final class DiBinder
 
     private function renderer(Container $di, string $appDir): void
     {
-        $qiqCachePath = getenv('QIQ_CACHE_PATH');
+        $di->params[QiqRenderer::class]['template'] = $di->lazy(static function () use ($appDir, $di) {
+            $qiqCachePath = getenv('QIQ_CACHE_PATH');
 
-        $di->params[QiqRenderer::class]['template'] = $di->lazy(static fn () => Template::new(
-            [$appDir . '/var/qiq/template'],
-            '.php',
-            is_string($qiqCachePath) && $qiqCachePath !== '' ? $appDir . $qiqCachePath : null,
-            $di->newInstance(QiqCustomHelper::class),
-        ));
+            $helper = $di->newInstance(QiqCustomHelper::class);
+            assert($helper instanceof QiqCustomHelper);
+
+            return Template::new(
+                [$appDir . '/var/qiq/template'],
+                '.php',
+                is_string($qiqCachePath) && $qiqCachePath !== '' ? $appDir . $qiqCachePath : null,
+                $helper,
+            );
+        });
         $di->params[QiqRenderer::class]['data'] = $di->lazyArray([
             'timestamp' => $di->lazyValue('timestamp'),
         ]);
