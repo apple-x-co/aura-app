@@ -27,15 +27,18 @@ Aura.PHP application
 
 ```mermaid
 sequenceDiagram
-    Bootstrap ->> RequestDispatcher: Call "__invoke"
+    Bootstrap ->> RequestDispatcher: Call "__invoke()"
     RequestDispatcher ->> RequestDispatcher: Get "RequestHandler"
-    RequestDispatcher ->> CloudflareTurnstileVerificationHandler: Call "__invoke"
-    RequestDispatcher ->> AdminAuthenticationHandler: Call "__invoke"
-    RequestDispatcher ->> RequestHandler: Call "onGet" or "onPost"
+    RequestDispatcher ->> CloudflareTurnstileVerificationHandler: Call "__invoke()"
+    RequestDispatcher ->> AdminAuthenticationHandler: Call "__invoke()"
+    RequestDispatcher ->> RequestHandler: Call "onGet()" or "onPost()"
     RequestHandler -->> RequestDispatcher: Return "RequestHandler"
     RequestDispatcher ->> RequestDispatcher: Get "RendererInterface" ("Json" or "HTML" or "TEXT")
-    RequestDispatcher ->> Response: Get "ResponseInterface"
-    RequestDispatcher -->> Bootstrap: Return "ResponseInterface"
+    RequestDispatcher ->> RendererInterface: Call "render()"
+    RendererInterface -->> RequestDispatcher: Return render result
+    RequestDispatcher ->> Response: Get "Response"
+    RequestDispatcher ->> RequestDispatcher: Set render result to "Response"
+    RequestDispatcher -->> Bootstrap: Return "Response"
 ```
 
 ## Execute on CLI
