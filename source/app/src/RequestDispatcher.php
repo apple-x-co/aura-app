@@ -14,6 +14,8 @@ use Laminas\Diactoros\Response\RedirectResponse;
 use Laminas\Diactoros\Response\TextResponse;
 use MyVendor\MyPackage\Auth\AdminAuthenticationHandler;
 use MyVendor\MyPackage\Auth\AuthenticationException;
+use MyVendor\MyPackage\Captcha\CaptchaException;
+use MyVendor\MyPackage\Captcha\CloudflareTurnstileVerificationHandler;
 use MyVendor\MyPackage\Renderer\HtmlRenderer;
 use MyVendor\MyPackage\Renderer\JsonRenderer;
 use MyVendor\MyPackage\Renderer\RendererInterface;
@@ -40,6 +42,7 @@ final class RequestDispatcher
     public function __construct(
         private readonly Accept $accept,
         private readonly AdminAuthenticationHandler $adminAuthenticationHandler,
+        private readonly CloudflareTurnstileVerificationHandler $cloudflareTurnstileVerificationHandler,
         private readonly Container $di,
         private readonly RouterInterface $router,
         private readonly ServerRequestInterface $serverRequest,
@@ -55,7 +58,7 @@ final class RequestDispatcher
         $route = $routerMatch->route;
         if ($route === false) {
             return new TextResponse(
-                'Route not found.',
+                'Route not found :(',
                 StatusCode::NOT_FOUND,
                 [],
             );
@@ -77,14 +80,26 @@ final class RequestDispatcher
         }
 
         if (! class_exists($routeHandler)) {
-            throw new RouteHandlerNotFoundException('Route handler "' . $routeHandler . '" not found.');
+            throw new RouteHandlerNotFoundException('Route handler "' . $routeHandler . '" not found  :(');
         }
 
         $object = $this->di->newInstance($routeHandler);
         if (! $object instanceof RequestHandler) {
-            throw new RouteHandlerNotFoundException('Route handler "' . $routeHandler . '" not found.');
+            throw new RouteHandlerNotFoundException('Route handler "' . $routeHandler . '" not found  :(');
         }
 
+        // NOTE: Cloudflare turnstile verify
+        try {
+            ($this->cloudflareTurnstileVerificationHandler)($routerMatch);
+        } catch (CaptchaException $captchaException) {
+            if (method_exists($object, 'onCfTurnstileFailed')) {
+                $object = $object->onCfTurnstileFailed($captchaException);
+            }
+
+            return $this->getResponse($object);
+        }
+
+        // NOTE: Admin authentication
         try {
             $adminAuthenticationResponse = ($this->adminAuthenticationHandler)($routerMatch);
         } catch (AuthenticationException $authenticationException) {
@@ -92,29 +107,22 @@ final class RequestDispatcher
                 $object = $object->onAuthenticationFailed($authenticationException);
             }
 
-            $renderer = $object->renderer ?? $this->getRenderer();
-            assert($renderer instanceof RendererInterface);
-
-            $response = new Response();
-            $response->getBody()->write($renderer->render($object));
-            foreach ($object->headers as $name => $value) {
-                $response = $response->withHeader($name, $value);
-            }
-
-            return $response->withStatus($object->code);
+            return $this->getResponse($object);
         }
 
         if ($adminAuthenticationResponse !== null) {
             return $adminAuthenticationResponse;
         }
 
+        // NOTE: Request handling
         $action = sprintf('on%s', ucfirst(strtolower($routerMatch->method)));
         if (! method_exists($object, $action)) {
             throw new RouteHandlerMethodNotAllowedException('Method not allowed.');
         }
 
         try {
-            $object = $object->$action(); // NOTE: ServerRequest や Route の取得は "Typehinted constructor" を使う
+            // NOTE: RequestHandler で ServerRequest や Route の取得をしたい場合は "Typehinted constructor" を使う
+            $object = $object->$action();
             if (! $object instanceof RequestHandler) {
                 throw new InvalidResponseException('Invalid response type.');
             }
@@ -127,15 +135,7 @@ final class RequestDispatcher
                 );
             }
 
-            $renderer = $object->renderer ?? $this->getRenderer();
-
-            $response = new Response();
-            $response->getBody()->write($renderer->render($object));
-            foreach ($object->headers as $name => $value) {
-                $response = $response->withHeader($name, $value);
-            }
-
-            $response = $response->withStatus($object->code);
+            $response = $this->getResponse($object);
         } catch (Throwable $throwable) {
             return new TextResponse(
                 (string) $throwable,
@@ -145,6 +145,20 @@ final class RequestDispatcher
         }
 
         return $response;
+    }
+
+    private function getResponse(RequestHandler $object): ResponseInterface
+    {
+        $renderer = $object->renderer ?? $this->getRenderer();
+        assert($renderer instanceof RendererInterface);
+
+        $response = new Response();
+        $response->getBody()->write($renderer->render($object));
+        foreach ($object->headers as $name => $value) {
+            $response = $response->withHeader($name, $value);
+        }
+
+        return $response->withStatus($object->code);
     }
 
     private function getRenderer(): RendererInterface

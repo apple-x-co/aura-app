@@ -15,6 +15,7 @@ use Laminas\Diactoros\ServerRequestFactory;
 use MyVendor\MyPackage\Auth\AdminAuthenticationHandler;
 use MyVendor\MyPackage\Auth\AdminAuthenticator;
 use MyVendor\MyPackage\Auth\AdminAuthenticatorInterface;
+use MyVendor\MyPackage\Captcha\CloudflareTurnstileVerificationHandler;
 use MyVendor\MyPackage\Renderer\HtmlRenderer;
 use MyVendor\MyPackage\Renderer\JsonRenderer;
 use MyVendor\MyPackage\Renderer\TextRenderer;
@@ -24,6 +25,7 @@ use MyVendor\MyPackage\Responder\WebResponder;
 use MyVendor\MyPackage\Router\CliRouter;
 use MyVendor\MyPackage\Router\RouterInterface;
 use MyVendor\MyPackage\Router\WebRouter;
+use MyVendor\MyPackage\TemplateEngine\QiqCustomHelper;
 use MyVendor\MyPackage\TemplateEngine\QiqRenderer;
 use Psr\Http\Message\ServerRequestInterface;
 use Qiq\Template;
@@ -56,6 +58,7 @@ final class DiBinder
         $this->requestDispatcher($di);
         $this->responder($di);
         $this->router($di, $appDir);
+        $this->security($di);
 
         return $di;
     }
@@ -99,11 +102,14 @@ final class DiBinder
             [$appDir . '/var/qiq/template'],
             '.php',
             is_string($qiqCachePath) && $qiqCachePath !== '' ? $appDir . $qiqCachePath : null,
+            $di->newInstance(QiqCustomHelper::class),
         ));
         $di->params[QiqRenderer::class]['data'] = $di->lazyArray([
             'timestamp' => $di->lazyValue('timestamp'),
         ]);
         $di->set(QiqRenderer::class, $di->lazyNew(QiqRenderer::class));
+
+        $di->params[QiqCustomHelper::class]['cloudflareTurnstileSiteKey'] = $di->lazyValue('cloudflareTurnstileSiteKey');
 
         $di->params[HtmlRenderer::class]['qiqRenderer'] = $di->lazyGet(QiqRenderer::class);
 
@@ -181,5 +187,13 @@ final class DiBinder
         }
 
         $di->set(RouterContainer::class, $di->lazyNew(RouterContainer::class));
+    }
+
+    private function security(Container $di): void
+    {
+        $di->values['cloudflareTurnstileSecretKey'] = getenv('CLOUDFLARE_TURNSTILE_SECRET_KEY');
+        $di->values['cloudflareTurnstileSiteKey'] = getenv('CLOUDFLARE_TURNSTILE_SITE_KEY');
+
+        $di->params[CloudflareTurnstileVerificationHandler::class]['secretKey'] = $di->lazyValue('cloudflareTurnstileSecretKey');
     }
 }

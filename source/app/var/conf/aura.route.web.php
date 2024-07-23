@@ -19,8 +19,11 @@ $map->attach('admin:', '/admin', function (Map $map) {
     $auth = ['admin' => true];
     $map->auth($auth);
 
-    $map->route('login', '/login', AdminHandler\Login::class)
+    $map->get('login', '/login', AdminHandler\Login::class)
         ->auth(array_merge($auth, ['adminLogin' => true]));
+
+    $map->post('_login', '/login', AdminHandler\Login::class)
+        ->auth(array_merge($auth, ['adminLogin' => true, 'cfTurnstile' => true]));
 
     $map->post('logout', '/logout', AdminHandler\Logout::class)
         ->auth(array_merge($auth, ['adminLogout' => true]));
