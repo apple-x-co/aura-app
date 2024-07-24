@@ -2,6 +2,8 @@
 
 Aura.PHP application
 
+![SCREENSHOT.png](SCREENSHOT.png)
+
 ## Library
 
 ### Backend
