@@ -1,7 +1,8 @@
-import terser from '@rollup/plugin-terser';
 import commonjs from '@rollup/plugin-commonjs';
 import nodeResolve from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
+import sass from 'rollup-plugin-sass';
+import terser from '@rollup/plugin-terser';
 
 export default {
   input: 'main.js',
@@ -23,6 +24,9 @@ export default {
     replace({
       preventAssignment: true,
       'process.env.NODE_ENV': JSON.stringify('production'),
+    }),
+    sass({
+      output: '../admin/css/bundle.css',
     }),
   ]
 };
