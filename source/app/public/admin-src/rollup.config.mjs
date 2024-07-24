@@ -27,6 +27,9 @@ export default {
     }),
     sass({
       output: '../admin/css/bundle.css',
+      options: {
+        outputStyle: 'compressed',
+      }
     }),
   ]
 };
