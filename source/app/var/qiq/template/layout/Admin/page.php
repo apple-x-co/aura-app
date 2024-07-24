@@ -42,7 +42,7 @@
             <main>{{ setBlock ('body_content') }}{{= getBlock () ~}}</main>
         </div>
         <div class="mx-5 lg:mx-0 my-10">
-            <footer>{{ setBlock ('body_footer') }}<p class="font-sans font-thin text-sm">Copyright &copy; 2023 apple-x-co.</p>{{= getBlock () ~}}</footer>
+            <footer>{{ setBlock ('body_footer') }}<p class="font-sans font-thin text-sm">Copyright &copy; 2024 apple-x-co.</p>{{= getBlock () ~}}</footer>
         </div>
     </div>
 </div>

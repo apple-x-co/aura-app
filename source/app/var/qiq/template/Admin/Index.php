@@ -1,9 +1,7 @@
-<html lang="ja">
-<head><title>Index | Admin</title></head>
-<body>
+{{ extends ('layout/Admin/page') }}
+
+{{ setBlock ('title') }}Index | {{ parentBlock () }}{{ endBlock () }}
+
+{{ setBlock ('body_content') }}
 <h1>Index</h1>
-<form action="/admin/logout" method="post">
-    <button>Logout</button>
-</form>
-</body>
-</html>
+{{ endBlock () }}
