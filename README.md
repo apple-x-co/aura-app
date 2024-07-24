@@ -30,6 +30,7 @@ sequenceDiagram
     Bootstrap ->> RequestDispatcher: Call "__invoke()"
     RequestDispatcher ->> RequestDispatcher: Get "RequestHandler"
     RequestDispatcher ->> CloudflareTurnstileVerificationHandler: Call "__invoke()"
+    RequestDispatcher ->> RequestHandler: Call "formValidate()" if using form
     RequestDispatcher ->> AdminAuthenticationHandler: Call "__invoke()"
     RequestDispatcher ->> RequestHandler: Call "onGet()" or "onPost()"
     RequestHandler -->> RequestDispatcher: Return "RequestHandler"

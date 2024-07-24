@@ -24,10 +24,13 @@
     {{ if (isset($captchaError) && $captchaError): }}
     <p>Captcha Error</p>
     {{ endif }}
-    <input type="text" name="username" value="" required minlength="5" placeholder="username">
-    <input type="password" name="password" value="" required minlength="5" placeholder="password">
+    {{ if (isset($formError) && $formError): }}
+    <p>Input Error</p>
+    {{ endif }}
+    {{= $form->widget('username', attr: ['class' => 'abc']) }}
+    {{= $form->widget('password', attr: ['class' => 'abc']) }}
     {{= cfTurnstileWidget(action: 'login', checked: 'cfTurnstileChecked', expired: 'cfTurnstileExpired', error: 'cfTurnstileError', timeout: 'cfTurnstileTimeout') }}
-    <button id="continue" disabled="disabled">Login</button>
+    {{= $form->widget('continue', attr: ['id' => 'continue', 'disabled' => 'disabled']) }}
 </form>
 </body>
 </html>

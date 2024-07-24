@@ -9,6 +9,10 @@ use Aura\Accept\Accept;
 use Aura\Accept\AcceptFactory;
 use Aura\Di\Container;
 use Aura\Di\ContainerBuilder;
+use Aura\Html\HelperLocator;
+use Aura\Html\HelperLocatorFactory;
+use Aura\Input\Builder;
+use Aura\Input\Filter;
 use Aura\Router\RouterContainer;
 use Koriym\QueryLocator\QueryLocator;
 use Laminas\Diactoros\ServerRequestFactory;
@@ -16,6 +20,8 @@ use MyVendor\MyPackage\Auth\AdminAuthenticationHandler;
 use MyVendor\MyPackage\Auth\AdminAuthenticator;
 use MyVendor\MyPackage\Auth\AdminAuthenticatorInterface;
 use MyVendor\MyPackage\Captcha\CloudflareTurnstileVerificationHandler;
+use MyVendor\MyPackage\Form\Admin\LoginForm;
+use MyVendor\MyPackage\Form\ExtendedForm;
 use MyVendor\MyPackage\Renderer\HtmlRenderer;
 use MyVendor\MyPackage\Renderer\JsonRenderer;
 use MyVendor\MyPackage\Renderer\TextRenderer;
@@ -53,6 +59,7 @@ final class DiBinder
 
         $this->appMeta($di, $appDir, $tmpDir);
         $this->authentication($di);
+        $this->form($di);
         $this->queryLocator($di, $appDir);
         $this->renderer($di, $appDir);
         $this->request($di);
@@ -86,6 +93,17 @@ final class DiBinder
         $di->params[AdminAuthenticationHandler::class]['adminAuthenticator'] = $di->lazyGet(AdminAuthenticator::class);
 
         $di->types[AdminAuthenticatorInterface::class] = $di->lazyGet(AdminAuthenticator::class);
+    }
+
+    private function form(Container $di): void
+    {
+        $di->params[ExtendedForm::class]['builder'] = $di->lazyNew(Builder::class);
+        $di->params[ExtendedForm::class]['filter'] = $di->lazyNew(Filter::class);
+
+        $di->set(HelperLocator::class, $di->lazy(fn () => (new HelperLocatorFactory)->newInstance()));
+        $di->params[ExtendedForm::class]['helper'] = $di->lazyGet(HelperLocator::class);
+
+        $di->types[LoginForm::class] = $di->lazyNew(LoginForm::class);
     }
 
     private function queryLocator(Container $di, string $appDir): void

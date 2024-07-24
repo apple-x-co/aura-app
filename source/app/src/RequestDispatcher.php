@@ -13,9 +13,12 @@ use Laminas\Diactoros\Response;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Laminas\Diactoros\Response\TextResponse;
 use MyVendor\MyPackage\Auth\AdminAuthenticationHandler;
+use MyVendor\MyPackage\Auth\AdminAuthenticationRequestHandlerInterface;
 use MyVendor\MyPackage\Auth\AuthenticationException;
 use MyVendor\MyPackage\Captcha\CaptchaException;
 use MyVendor\MyPackage\Captcha\CloudflareTurnstileVerificationHandler;
+use MyVendor\MyPackage\Captcha\CloudflareTurnstileVerificationRequestHandlerInterface;
+use MyVendor\MyPackage\Form\FormValidationInterface;
 use MyVendor\MyPackage\Renderer\HtmlRenderer;
 use MyVendor\MyPackage\Renderer\JsonRenderer;
 use MyVendor\MyPackage\Renderer\RendererInterface;
@@ -92,18 +95,28 @@ final class RequestDispatcher
         try {
             ($this->cloudflareTurnstileVerificationHandler)($routerMatch);
         } catch (CaptchaException $captchaException) {
-            if (method_exists($object, 'onCfTurnstileFailed')) {
+            if ($object instanceof CloudflareTurnstileVerificationRequestHandlerInterface) {
                 $object = $object->onCfTurnstileFailed($captchaException);
             }
 
             return $this->getResponse($object);
         }
 
+        // NOTE: Form validation
+        if ($object instanceof FormValidationInterface) {
+            $isValid = $object->formValidate($serverRequest);
+            if (! $isValid) {
+                $object = $object->onFormValidationFailed();
+
+                return $this->getResponse($object);
+            }
+        }
+
         // NOTE: Admin authentication
         try {
             $adminAuthenticationResponse = ($this->adminAuthenticationHandler)($routerMatch);
         } catch (AuthenticationException $authenticationException) {
-            if (method_exists($object, 'onAuthenticationFailed')) {
+            if ($object instanceof AdminAuthenticationRequestHandlerInterface) {
                 $object = $object->onAuthenticationFailed($authenticationException);
             }
 
