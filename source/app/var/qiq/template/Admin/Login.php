@@ -29,12 +29,12 @@
     {{ endif }}
 
     {{= $form->widget('username', attr: ['class' => 'abc']) }}
-    {{ foreach ($form->getMessages('username') as $errorMessage): }}
+    {{ foreach ($form->errorMessages('username') as $errorMessage): }}
     <p>{{h $errorMessage }}</p>
     {{ endforeach; }}
 
     {{= $form->widget('password', attr: ['class' => 'abc']) }}
-    {{ foreach ($form->getMessages('password') as $errorMessage): }}
+    {{ foreach ($form->errorMessages('password') as $errorMessage): }}
     <p>{{h $errorMessage }}</p>
     {{ endforeach; }}
 

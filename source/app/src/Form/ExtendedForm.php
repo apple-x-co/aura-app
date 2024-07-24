@@ -33,4 +33,15 @@ class ExtendedForm extends Form
 
         return (string) $this->helper->input($array); // @phpstan-ignore-line
     }
+
+    /**
+     * @return list<string>
+     *
+     * @psalm-suppress MoreSpecificReturnType
+     * @psalm-suppress LessSpecificReturnStatement
+     */
+    public function errorMessages(string|null $name): array
+    {
+        return $this->getMessages($name);
+    }
 }
