@@ -10,23 +10,27 @@ use Aura\Input\FilterInterface;
 use Aura\Input\Form;
 
 use function array_merge;
+use function is_array;
 
+/** @psalm-suppress PropertyNotSetInConstructor */
 class ExtendedForm extends Form
 {
     public function __construct(
         BuilderInterface $builder,
-        FilterInterface  $filter,
+        FilterInterface $filter,
         private readonly HelperLocator $helper,
-    )
-    {
-        parent::__construct($builder, $filter, []);
+    ) {
+        parent::__construct($builder, $filter);
     }
 
+    /** @param array<string, string|int> $attr */
     public function widget(string $name, array $attr = []): string
     {
         $array = $this->get($name);
-        $array['attribs'] = array_merge($array['attribs'], $attr);
+        if (is_array($array)) {
+            $array['attribs'] = array_merge($array['attribs'] ?? [], $attr);
+        }
 
-        return (string) $this->helper->input($array);
+        return (string) $this->helper->input($array); // @phpstan-ignore-line
     }
 }

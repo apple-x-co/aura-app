@@ -13,9 +13,7 @@ use MyVendor\MyPackage\Form\FormValidationInterface;
 use MyVendor\MyPackage\RequestHandler;
 use Psr\Http\Message\ServerRequestInterface;
 
-final class Login extends RequestHandler implements AdminAuthenticationRequestHandlerInterface,
-                                                    CloudflareTurnstileVerificationRequestHandlerInterface,
-                                                    FormValidationInterface
+final class Login extends RequestHandler implements AdminAuthenticationRequestHandlerInterface, CloudflareTurnstileVerificationRequestHandlerInterface, FormValidationInterface
 {
     public function __construct(private readonly LoginForm $form)
     {
@@ -27,14 +25,14 @@ final class Login extends RequestHandler implements AdminAuthenticationRequestHa
         return $this;
     }
 
-    public function onAuthenticationFailed(AuthenticationException $authenticationException): self
+    public function onAuthenticationFailed(AuthenticationException $authenticationException): RequestHandler
     {
         $this->body['authError'] = true;
 
         return $this;
     }
 
-    public function onCfTurnstileFailed(CaptchaException $captchaException): self
+    public function onCfTurnstileFailed(CaptchaException $captchaException): RequestHandler
     {
         $this->body['captchaError'] = true;
 
@@ -43,12 +41,12 @@ final class Login extends RequestHandler implements AdminAuthenticationRequestHa
 
     public function formValidate(ServerRequestInterface $serverRequest): bool
     {
-        $this->form->fill($serverRequest->getParsedBody());
+        $this->form->fill((array) $serverRequest->getParsedBody());
 
         return $this->form->filter();
     }
 
-    public function onFormValidationFailed(): FormValidationInterface
+    public function onFormValidationFailed(): RequestHandler
     {
         $this->body['formError'] = true;
 

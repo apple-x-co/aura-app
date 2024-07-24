@@ -4,15 +4,19 @@ declare(strict_types=1);
 
 namespace MyVendor\MyPackage\Form\Admin;
 
+use Aura\Input\Filter;
 use MyVendor\MyPackage\Form\ExtendedForm;
 
+use function assert;
 use function preg_match;
 
+/** @psalm-suppress PropertyNotSetInConstructor */
 final class LoginForm extends ExtendedForm
 {
     public function init(): void
     {
         $filter = $this->getFilter();
+        assert($filter instanceof Filter);
 
         /** @psalm-suppress UndefinedMethod */
         $this->setField('username', 'text')
@@ -26,7 +30,7 @@ final class LoginForm extends ExtendedForm
         $filter->setRule(
             'username',
             'ログインIDを入力してください',
-            static fn ($value) => $value !== ''
+            static fn (string $value) => $value !== '',
         );
 
         /** @psalm-suppress UndefinedMethod */
@@ -40,16 +44,17 @@ final class LoginForm extends ExtendedForm
         $filter->setRule(
             'password',
             'パスワードを入力してください',
-            static fn ($value) => (bool) preg_match('/^[A-Za-z0-9!@#$%^&*]+$/i', $value)
+            static fn (string $value) => (bool) preg_match('/^[A-Za-z0-9!@#$%^&*]+$/i', $value),
         );
 
         /** @psalm-suppress UndefinedMethod */
         $this->setField('continue', 'submit')
             ->setAttribs(['value' => 'Login']);
+        /** @psalm-suppress UndefinedMethod */
         $filter->setRule(
             'continue',
             'Login をクリックしてください',
-            static fn ($value) => $value === 'Login'
+            static fn (string $value) => $value === 'Login',
         );
     }
 }

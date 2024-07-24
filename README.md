@@ -45,5 +45,5 @@ sequenceDiagram
 ## Execute on CLI
 
 ```bash
-composer run cli get /hello
+composer run-script cli get /hello
 ```

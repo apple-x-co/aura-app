@@ -100,7 +100,7 @@ final class DiBinder
         $di->params[ExtendedForm::class]['builder'] = $di->lazyNew(Builder::class);
         $di->params[ExtendedForm::class]['filter'] = $di->lazyNew(Filter::class);
 
-        $di->set(HelperLocator::class, $di->lazy(fn () => (new HelperLocatorFactory)->newInstance()));
+        $di->set(HelperLocator::class, $di->lazy(static fn () => (new HelperLocatorFactory())->newInstance()));
         $di->params[ExtendedForm::class]['helper'] = $di->lazyGet(HelperLocator::class);
 
         $di->types[LoginForm::class] = $di->lazyNew(LoginForm::class);
