@@ -23,7 +23,7 @@ $map->attach('admin:', '/admin', function (Map $map) {
         ->auth([]);
 
     $map->post('_login', '/login', AdminHandler\Login::class)
-        ->auth(['login' => true, 'cfTurnstile' => true]);
+        ->auth(['login' => true]);
 
     $map->post('logout', '/logout', AdminHandler\Logout::class)
         ->auth(array_merge($auth, ['logout' => true]));

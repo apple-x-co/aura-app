@@ -4,16 +4,12 @@ declare(strict_types=1);
 
 namespace MyVendor\MyPackage\Captcha;
 
-use MyVendor\MyPackage\Router\RouterMatch;
-
 use function curl_close;
 use function curl_exec;
 use function curl_getinfo;
 use function curl_init;
 use function curl_setopt_array;
 use function http_build_query;
-use function is_array;
-use function is_bool;
 use function json_decode;
 
 use const CURLINFO_HTTP_CODE;
@@ -35,12 +31,8 @@ final class CloudflareTurnstileVerificationHandler implements CloudflareTurnstil
     ) {
     }
 
-    public function __invoke(RouterMatch $routerMatch): void
+    public function __invoke(): void
     {
-        if (! $this->isCfTurnstile($routerMatch)) {
-            return;
-        }
-
         $cfToken = $_POST['cf-turnstile-response'] ?? null;
         if ($cfToken === null) {
             throw new CaptchaTokenMissing();
@@ -80,19 +72,5 @@ final class CloudflareTurnstileVerificationHandler implements CloudflareTurnstil
         }
 
         throw new CaptchaVerifyError();
-    }
-
-    private function isCfTurnstile(RouterMatch $routerMatch): bool
-    {
-        if ($routerMatch->route === false) {
-            return false;
-        }
-
-        $auth = $routerMatch->route->auth;
-
-        return is_array($auth) &&
-            isset($auth['cfTurnstile']) &&
-            is_bool($auth['cfTurnstile']) &&
-            $auth['cfTurnstile'];
     }
 }

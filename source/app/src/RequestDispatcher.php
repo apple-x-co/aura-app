@@ -8,6 +8,7 @@ use Aura\Accept\Accept;
 use Aura\Accept\Media\MediaValue;
 use Aura\Di\Container;
 use Koriym\HttpConstants\MediaType;
+use Koriym\HttpConstants\Method;
 use Koriym\HttpConstants\StatusCode;
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\Response\RedirectResponse;
@@ -92,18 +93,24 @@ final class RequestDispatcher
         }
 
         // NOTE: Cloudflare turnstile verify
-        try {
-            ($this->cloudflareTurnstileVerificationHandler)($routerMatch);
-        } catch (CaptchaException $captchaException) {
-            if ($object instanceof CloudflareTurnstileVerificationRequestHandlerInterface) {
+        if (
+            $routerMatch->method === Method::POST &&
+            $object instanceof CloudflareTurnstileVerificationRequestHandlerInterface
+        ) {
+            try {
+                ($this->cloudflareTurnstileVerificationHandler)();
+            } catch (CaptchaException $captchaException) {
                 $object = $object->onCfTurnstileFailed($captchaException);
-            }
 
-            return $this->getResponse($object);
+                return $this->getResponse($object);
+            }
         }
 
         // NOTE: Form validation
-        if ($object instanceof FormValidationInterface) {
+        if (
+            $routerMatch->method === Method::POST &&
+            $object instanceof FormValidationInterface
+        ) {
             $isValid = $object->formValidate($serverRequest);
             if (! $isValid) {
                 $object = $object->onFormValidationFailed();
