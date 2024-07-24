@@ -6,6 +6,8 @@ namespace MyVendor\MyPackage\Form\Admin;
 
 use MyVendor\MyPackage\Form\ExtendedForm;
 
+use function preg_match;
+
 final class LoginForm extends ExtendedForm
 {
     public function init(): void
@@ -21,10 +23,6 @@ final class LoginForm extends ExtendedForm
                 'required' => 'required',
                 'title' => '有効なユーザー名を入力してください',
             ]);
-//        $this->filter
-//            ->validate('username')
-//            ->is('email');
-//        $this->filter->useFieldMessage('username', '有効なEメールアドレスを入力してください');
         $filter->setRule(
             'username',
             'ログインIDを入力してください',
@@ -39,19 +37,10 @@ final class LoginForm extends ExtendedForm
                 'required' => 'required',
                 'title' => '有効なパスワードを入力してください',
             ]);
-//        /** @psalm-suppress TooManyArguments */
-//        $this->filter
-//            ->validate('password')
-//            ->is('string');
-//        /** @psalm-suppress TooManyArguments */
-//        $this->filter
-//            ->validate('password')
-//            ->is('regex', '/^[A-Za-z0-9!@#$%^&*]+$/i');
-//        $this->filter->useFieldMessage('password', '有効なパスワードを入力してください');
         $filter->setRule(
             'password',
             'パスワードを入力してください',
-            static fn ($value) => $value !== ''
+            static fn ($value) => (bool) preg_match('/^[A-Za-z0-9!@#$%^&*]+$/i', $value)
         );
 
         /** @psalm-suppress UndefinedMethod */
@@ -62,19 +51,5 @@ final class LoginForm extends ExtendedForm
             'Login をクリックしてください',
             static fn ($value) => $value === 'Login'
         );
-
-//         /** @psalm-suppress TooManyArguments */
-//        $this->filter
-//            ->validate('login')
-//            ->is('string');
-//        /** @psalm-suppress TooManyArguments */
-//        $this->filter
-//            ->validate('login')
-//            ->is('strictEqualToValue', 'ログイン');
-//        $this->filter->useFieldMessage(
-//            'login',
-//            'ログインをクリックしてください',
-//        );
-
     }
 }

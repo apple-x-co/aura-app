@@ -27,11 +27,6 @@ final class Login extends RequestHandler implements AdminAuthenticationRequestHa
         return $this;
     }
 
-    public function onPost(): self
-    {
-        return $this;
-    }
-
     public function onAuthenticationFailed(AuthenticationException $authenticationException): self
     {
         $this->body['authError'] = true;
