@@ -53,6 +53,7 @@ final class DiBinder
         $di = $builder->newInstance(true); // NOTE: "$di->types['xxx']" を使うために有効化
 
         $di->values['timestamp'] = time();
+        $di->values['baseUrl'] = getenv('BASE_URL');
         $di->values['pdoDsn'] = getenv('DB_DSN');
         $di->values['pdoUsername'] = getenv('DB_USER');
         $di->values['pdoPassword'] = getenv('DB_PASS');
@@ -129,6 +130,7 @@ final class DiBinder
             );
         });
         $di->params[QiqRenderer::class]['data'] = $di->lazyArray([
+            'baseUrl' => $di->lazyValue('baseUrl'),
             'timestamp' => $di->lazyValue('timestamp'),
         ]);
         $di->set(QiqRenderer::class, $di->lazyNew(QiqRenderer::class));
