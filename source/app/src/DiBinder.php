@@ -14,6 +14,8 @@ use Aura\Html\HelperLocatorFactory;
 use Aura\Input\Builder;
 use Aura\Input\Filter;
 use Aura\Router\RouterContainer;
+use Aura\Session\Session;
+use Aura\Session\SessionFactory;
 use Koriym\QueryLocator\QueryLocator;
 use Laminas\Diactoros\ServerRequestFactory;
 use MyVendor\MyPackage\Auth\AdminAuthenticationHandler;
@@ -21,7 +23,9 @@ use MyVendor\MyPackage\Auth\AdminAuthenticator;
 use MyVendor\MyPackage\Auth\AdminAuthenticatorInterface;
 use MyVendor\MyPackage\Captcha\CloudflareTurnstileVerificationHandler;
 use MyVendor\MyPackage\Form\Admin\LoginForm;
+use MyVendor\MyPackage\Form\AntiCsrf;
 use MyVendor\MyPackage\Form\ExtendedForm;
+use MyVendor\MyPackage\Form\SetAntiCsrfTrait;
 use MyVendor\MyPackage\Renderer\HtmlRenderer;
 use MyVendor\MyPackage\Renderer\JsonRenderer;
 use MyVendor\MyPackage\Renderer\TextRenderer;
@@ -68,6 +72,7 @@ final class DiBinder
         $this->responder($di);
         $this->router($di, $appDir);
         $this->security($di);
+        $this->session($di);
 
         return $di;
     }
@@ -103,6 +108,8 @@ final class DiBinder
 
         $di->set(HelperLocator::class, $di->lazy(static fn () => (new HelperLocatorFactory())->newInstance()));
         $di->params[ExtendedForm::class]['helper'] = $di->lazyGet(HelperLocator::class);
+
+        $di->setters[SetAntiCsrfTrait::class]['setAntiCsrf'] = $di->lazyNew(AntiCsrf::class);
 
         $di->types[LoginForm::class] = $di->lazyNew(LoginForm::class);
     }
@@ -221,5 +228,13 @@ final class DiBinder
         $di->values['cloudflareTurnstileSiteKey'] = getenv('CLOUDFLARE_TURNSTILE_SITE_KEY');
 
         $di->params[CloudflareTurnstileVerificationHandler::class]['secretKey'] = $di->lazyValue('cloudflareTurnstileSecretKey');
+    }
+
+    private function session(Container $di): void
+    {
+        $di->set(Session::class, $di->lazy(fn () => (new SessionFactory())->newInstance($_COOKIE ?? [])));
+        // $di->types[Session::class] = $di->lazyGet(Session::class);
+
+        $di->params[AntiCsrf::class]['session'] = $di->lazyGet(Session::class);
     }
 }

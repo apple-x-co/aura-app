@@ -34,6 +34,11 @@ class ExtendedForm extends Form
         return (string) $this->helper->input($array); // @phpstan-ignore-line
     }
 
+    public function csrfTokenWidget(): string
+    {
+        return $this->widget(AntiCsrf::FIELD_NAME);
+    }
+
     /**
      * @return list<string>
      *

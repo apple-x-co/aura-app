@@ -55,6 +55,7 @@
                     {{= cfTurnstileWidget(action: 'login', checked: 'cfTurnstileChecked', expired: 'cfTurnstileExpired', error: 'cfTurnstileError', timeout: 'cfTurnstileTimeout') }}
                 </div>
                 <label class="block mt-5 text-center">
+                    {{= $form->csrfTokenWidget() }}
                     {{= $form->widget('continue', attr: ['id' => 'continue', 'disabled' => 'disabled', 'class' => 'py-2 px-3 bg-sky-500 text-white text-sm font-sans font-bold tracking-wider rounded-md shadow-lg shadow-sky-500/50 focus:outline-none disabled:text-white disabled:bg-slate-200 disabled:shadow-none']) }}
                     {{ foreach ($form->getMessages('continue') as $errorMessage): }}
                     <p class="block text-sm text-rose-500 italic">{{h $errorMessage }}</p>

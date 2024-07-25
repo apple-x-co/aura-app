@@ -6,6 +6,7 @@ namespace MyVendor\MyPackage\Form\Admin;
 
 use Aura\Input\Filter;
 use MyVendor\MyPackage\Form\ExtendedForm;
+use MyVendor\MyPackage\Form\SetAntiCsrfTrait;
 
 use function assert;
 use function preg_match;
@@ -13,6 +14,8 @@ use function preg_match;
 /** @psalm-suppress PropertyNotSetInConstructor */
 final class LoginForm extends ExtendedForm
 {
+    use SetAntiCsrfTrait;
+
     public function init(): void
     {
         $filter = $this->getFilter();
