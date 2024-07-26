@@ -1,0 +1,29 @@
+order deny,allow
+
+<IfModule mod_headers.so>
+    # Clickjacking
+    Header always append X-Frame-Options SAMEORIGIN
+    # XSS
+    Header always set X-XSS-Protection "1; mode=block"
+    # X-Content-Type-Options
+    Header always set X-Content-Type-Options "nosniff"
+    # HTTP Strict Transport Security
+    Header set Strict-Transport-Security "max-age=315360000; includeSubDomains; preload"
+</IfModule>
+
+<IfModule mod_rewrite.c>
+    # turn on rewriting
+    RewriteEngine On
+
+    # for all files not found in the file system,
+    # reroute to "index.php" bootstrap script,
+    # keeping the query string intact.
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !favicon.ico$
+    RewriteRule ^(.*)$ /index.php [QSA,L]
+
+    # support "Authorization" header
+    RewriteCond %{HTTP:Authorization} ^(.*)
+    RewriteRule ^(.*) - [E=HTTP_AUTHORIZATION:%1]
+</IfModule>

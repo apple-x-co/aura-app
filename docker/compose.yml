@@ -1,0 +1,63 @@
+services:
+  web:
+    image: ghcr.io/buddying-inc/webserver-centos83:apache24-php82
+    platform: linux/amd64
+    container_name: aura-web
+    working_dir: /var/www/html
+    volumes:
+      - type: bind
+        source: ../source/app
+        target: /var/www/html
+        read_only: false
+        consistency: delegated
+      - type: bind
+        source: localhost.conf
+        target: /etc/httpd/conf.d/00_localhost.conf
+        read_only: true
+    ports:
+      - "80:80"
+    environment:
+      - PHP_XDEBUG=on
+      - COMPOSER_ALLOW_SUPERUSER=1
+
+  mysql:
+    image: ghcr.io/buddying-inc/mysql:80
+    platform: linux/amd64
+    container_name: aura-mysql
+    volumes:
+      - type: bind
+        source: .mysql
+        target: /var/lib/mysql
+        read_only: false
+        consistency: delegated
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=passw0rd
+      - MYSQL_DATABASE=aura_db
+      - MYSQL_USER=aura
+      - MYSQL_PASSWORD=passw0rd
+      - TZ=Asia/Tokyo
+
+#  smtp:
+#    image: mailhog/mailhog
+#    platform: linux/amd64
+#    container_name: aura-smtp
+#    ports:
+#      - "8025:8025"
+#      - "1025:1025"
+
+#  localstack:
+#    image: localstack/localstack
+#    container_name: aura-aws
+#    ports:
+#      - "4566:4566"
+#    volumes:
+#      - ./localstack:/docker-entrypoint-initaws.d
+#      - ./.localstack:/tmp/localstack:delegated
+#    environment:
+#      - DEFAULT_REGION=ap-northeast-1
+#      - SERVICES=s3,sns
+#      - DATA_DIR=/tmp/localstack/data
+#      - DEBUG=1
+#      - HOSTNAME_EXTERNAL=aura-aws
