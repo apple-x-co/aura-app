@@ -9,9 +9,12 @@ use Aura\Input\Fieldset;
 use Aura\Session\CsrfToken;
 use Aura\Session\Session;
 
+use function assert;
+use function is_string;
+
 final class AntiCsrf implements AntiCsrfInterface
 {
-    public const FIELD_NAME = '__csrf_token';
+    public const INPUT_NAME = '__csrf_token';
 
     public function __construct(
         private readonly Session $session,
@@ -25,16 +28,19 @@ final class AntiCsrf implements AntiCsrfInterface
 
     public function setField(Fieldset $fieldset): void
     {
-        $fieldset->setField(self::FIELD_NAME, 'hidden')
+        $fieldset->setField(self::INPUT_NAME, 'hidden')
             ->setAttribs(['value' => $this->getCsrfToken()->getValue()]);
     }
 
+    /** @param array<array-key, mixed> $data */
     public function isValid(array $data): bool
     {
-        if (! isset($data[self::FIELD_NAME])) {
+        if (! isset($data[self::INPUT_NAME])) {
             return false;
         }
 
-        return $this->getCsrfToken()->isValid($data[self::FIELD_NAME]);
+        assert(is_string($data[self::INPUT_NAME]));
+
+        return $this->getCsrfToken()->isValid($data[self::INPUT_NAME]);
     }
 }

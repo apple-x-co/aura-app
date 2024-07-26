@@ -36,7 +36,7 @@ class ExtendedForm extends Form
 
     public function csrfTokenWidget(): string
     {
-        return $this->widget(AntiCsrf::FIELD_NAME);
+        return $this->widget(AntiCsrf::INPUT_NAME);
     }
 
     /**

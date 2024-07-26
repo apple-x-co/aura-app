@@ -25,7 +25,7 @@ use MyVendor\MyPackage\Captcha\CloudflareTurnstileVerificationHandler;
 use MyVendor\MyPackage\Form\Admin\LoginForm;
 use MyVendor\MyPackage\Form\AntiCsrf;
 use MyVendor\MyPackage\Form\ExtendedForm;
-use MyVendor\MyPackage\Form\SetAntiCsrfTrait;
+use MyVendor\MyPackage\Form\SetAntiCsrfInject;
 use MyVendor\MyPackage\Renderer\HtmlRenderer;
 use MyVendor\MyPackage\Renderer\JsonRenderer;
 use MyVendor\MyPackage\Renderer\TextRenderer;
@@ -109,7 +109,7 @@ final class DiBinder
         $di->set(HelperLocator::class, $di->lazy(static fn () => (new HelperLocatorFactory())->newInstance()));
         $di->params[ExtendedForm::class]['helper'] = $di->lazyGet(HelperLocator::class);
 
-        $di->setters[SetAntiCsrfTrait::class]['setAntiCsrf'] = $di->lazyNew(AntiCsrf::class);
+        $di->setters[SetAntiCsrfInject::class]['setAntiCsrf'] = $di->lazyNew(AntiCsrf::class);
 
         $di->types[LoginForm::class] = $di->lazyNew(LoginForm::class);
     }
@@ -232,7 +232,7 @@ final class DiBinder
 
     private function session(Container $di): void
     {
-        $di->set(Session::class, $di->lazy(fn () => (new SessionFactory())->newInstance($_COOKIE ?? [])));
+        $di->set(Session::class, $di->lazy(static fn () => (new SessionFactory())->newInstance($_COOKIE)));
         // $di->types[Session::class] = $di->lazyGet(Session::class);
 
         $di->params[AntiCsrf::class]['session'] = $di->lazyGet(Session::class);
