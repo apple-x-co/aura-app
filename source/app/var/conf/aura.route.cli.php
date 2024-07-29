@@ -7,7 +7,7 @@ use MyVendor\MyPackage\Handler;
 
 /* @var Map $map */
 
-$map->attach('cli:', null, function (Map $map) {
-    $map->get('hello', '/hello', Handler\Hello::class,)
+$map->attach('/cli', null, function (Map $map) {
+    $map->get('/hello', '/hello', Handler\Hello::class,)
         ->extras(['a' => 'b']);
 });

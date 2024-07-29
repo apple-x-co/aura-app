@@ -208,6 +208,8 @@ final class DiBinder
                         $router = new RouterContainer();
                         $map = $router->getMap();
 
+                        $adminPrefix = getenv('ADMIN_PREFIX');
+
                         /** @psalm-suppress UnresolvableInclude */
                         require $file;
 
