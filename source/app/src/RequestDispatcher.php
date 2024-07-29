@@ -33,6 +33,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 
 use function assert;
+use function call_user_func_array;
 use function class_exists;
 use function is_callable;
 use function is_string;
@@ -142,7 +143,11 @@ final class RequestDispatcher
 
         try {
             // NOTE: RequestHandler で ServerRequest や Route の取得をしたい場合は "Typehinted constructor" を使う
-            $object = $object->$action();
+            $callable = [$object, $action];
+            if (is_callable($callable)) {
+                call_user_func_array($callable, $route->attributes);
+            }
+
             if (! $object instanceof RequestHandler) {
                 throw new InvalidResponseException('Invalid response type.');
             }

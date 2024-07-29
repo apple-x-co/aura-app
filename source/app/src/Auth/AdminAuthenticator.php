@@ -12,6 +12,7 @@ use Aura\Auth\Service\LoginService;
 use Aura\Auth\Service\LogoutService;
 use Aura\Auth\Service\ResumeService;
 use Aura\Auth\Verifier\PasswordVerifier;
+use MyVendor\MyPackage\Router\RouterInterface;
 use PDO;
 
 use function assert;
@@ -29,6 +30,7 @@ class AdminAuthenticator implements AdminAuthenticatorInterface
         private readonly string $pdoDsn,
         private readonly string $pdoUsername,
         private readonly string $pdoPassword,
+        private readonly RouterInterface $router,
     ) {
     }
 
@@ -152,17 +154,17 @@ class AdminAuthenticator implements AdminAuthenticatorInterface
 
     public function getAuthRedirect(): string
     {
-        return '/admin/index';
+        return (string) $this->router->generate('/admin/index');
     }
 
     public function getUnauthRedirect(): string
     {
-        return '/admin/login';
+        return (string) $this->router->generate('/admin/login');
     }
 
     public function getPasswordRedirect(): string
     {
-        return '/admin/password-confirm';
+        return (string) $this->router->generate('/admin/password-confirm');
     }
 
     public function getIdentity(): AdminIdentity

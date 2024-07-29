@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MyVendor\MyPackage\TemplateEngine;
 
+use MyVendor\MyPackage\Router\RouterInterface;
 use Qiq\Helper\Html\HtmlHelpers;
 
 use function is_string;
@@ -13,6 +14,7 @@ final class QiqCustomHelper extends HtmlHelpers
 {
     public function __construct(
         private readonly string $cloudflareTurnstileSiteKey,
+        private readonly RouterInterface $router,
     ) {
         parent::__construct();
     }
@@ -52,5 +54,11 @@ final class QiqCustomHelper extends HtmlHelpers
         }
 
         return sprintf('<div %s></div>', $this->a($attribs));
+    }
+
+    /** @param array<string, string|int> $data */
+    public function generateUrl(string $name, array $data = []): string
+    {
+        return (string) $this->router->generate($name, $data);
     }
 }

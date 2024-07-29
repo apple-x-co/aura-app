@@ -6,12 +6,12 @@
     <div class="max-w-7xl mx-auto">
         <div class="py-4 border-b border-slate-900/10 px-4 lg:px-8 lg:border-0">
             <div class="relative flex items-center">
-                <a class="mr-3 flex-none overflow-hidden lg:w-auto font-sans font-black text-lg bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" href="/admin/index">
+                <a class="mr-3 flex-none overflow-hidden lg:w-auto font-sans font-black text-lg bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" href="{{a generateUrl('/admin/index') }}">
                     ADMINISTRATOR
                 </a>
                 <div class="relative hidden lg:flex items-center ml-auto">
                     <div class="flex items-center border-l border-slate-200 ml-6 pl-6 dark:border-slate-800">
-                        <form method="post" action="/admin/logout">
+                        <form method="post" action="{{a generateUrl('/admin/logout') }}">
                             <button>
                                 {{= render('partials/Admin/InlineIcon', ['name' => 'arrow-left-on-rectangle']) }}
                             </button>
@@ -31,7 +31,7 @@
             {{ setBlock ('body_nav') }}
             {{ $viewName = $this->getView() }}
             <p>
-                <a class="text-sm font-bold tracking-wider {{ if ($view == 'Page/Admin/Index'): }}text-lime-500{{ endif }}" href="/admin/index">HOME</a>
+                <a class="text-sm font-bold tracking-wider {{ if ($viewName == 'Admin/Index'): }}text-lime-500{{ endif }}" href="{{a generateUrl('/admin/index') }}">HOME</a>
             </p>
             {{= getBlock () ~}}
         </nav>
