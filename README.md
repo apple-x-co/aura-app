@@ -23,6 +23,7 @@ Aura.PHP application
 ### Features
 
 * ID & password login
+* Cloudflare turnstile check
 * Flash message
 
 ### Architecture
@@ -49,3 +50,7 @@ sequenceDiagram
 ```bash
 composer run-script cli get /hello
 ```
+
+## Cloudflare Turnstile
+
+* [Dummy sitekeys and secret keys](https://developers.cloudflare.com/turnstile/troubleshooting/testing/)

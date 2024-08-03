@@ -9,6 +9,7 @@ use Aura\Accept\Media\MediaValue;
 use Aura\Di\Container;
 use Koriym\HttpConstants\MediaType;
 use Koriym\HttpConstants\Method;
+use Koriym\HttpConstants\ResponseHeader;
 use Koriym\HttpConstants\StatusCode;
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\Response\RedirectResponse;
@@ -35,6 +36,7 @@ use Throwable;
 use function assert;
 use function call_user_func_array;
 use function class_exists;
+use function is_bool;
 use function is_callable;
 use function is_string;
 use function method_exists;
@@ -61,7 +63,7 @@ final class RequestDispatcher
     {
         $routerMatch = $this->router->match($this->serverRequest);
         $route = $routerMatch->route;
-        if ($route === false) {
+        if (is_bool($route)) {
             return new TextResponse(
                 'Route not found :(',
                 StatusCode::NOT_FOUND,
@@ -145,16 +147,16 @@ final class RequestDispatcher
             // NOTE: RequestHandler で ServerRequest や Route の取得をしたい場合は "Typehinted constructor" を使う
             $callable = [$object, $action];
             if (is_callable($callable)) {
-                call_user_func_array($callable, $route->attributes);
+                $object = call_user_func_array($callable, $route->attributes);
             }
 
             if (! $object instanceof RequestHandler) {
                 throw new InvalidResponseException('Invalid response type.');
             }
 
-            if (isset($object->headers['location'])) {
+            if (isset($object->headers[ResponseHeader::LOCATION])) {
                 return new RedirectResponse(
-                    $object->headers['location'],
+                    $object->headers[ResponseHeader::LOCATION],
                     $object->code,
                     $object->headers,
                 );

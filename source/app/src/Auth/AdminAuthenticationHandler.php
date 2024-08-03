@@ -9,6 +9,7 @@ use Aura\Auth\Exception\PasswordIncorrect as AuraPasswordIncorrect;
 use Aura\Auth\Exception\PasswordMissing as AuraPasswordMissing;
 use Aura\Auth\Exception\UsernameMissing as AuraUsernameMissing;
 use Aura\Auth\Exception\UsernameNotFound as AuraUsernameNotFound;
+use Koriym\HttpConstants\Method;
 use Laminas\Diactoros\Response\RedirectResponse;
 use MyVendor\MyPackage\Router\RouterMatch;
 use Psr\Http\Message\ResponseInterface;
@@ -95,7 +96,8 @@ final class AdminAuthenticationHandler implements AdminAuthenticationHandlerInte
         return is_array($auth) &&
             isset($auth['login']) &&
             is_bool($auth['login']) &&
-            $auth['login'];
+            $auth['login'] &&
+            $routerMatch->method === Method::POST;
     }
 
     private function isLogout(RouterMatch $routerMatch): bool
@@ -109,6 +111,7 @@ final class AdminAuthenticationHandler implements AdminAuthenticationHandlerInte
         return is_array($auth) &&
             isset($auth['logout']) &&
             is_bool($auth['logout']) &&
-            $auth['logout'];
+            $auth['logout'] &&
+            $routerMatch->method === Method::POST;
     }
 }
