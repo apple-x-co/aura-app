@@ -36,6 +36,7 @@ use Throwable;
 use function assert;
 use function call_user_func_array;
 use function class_exists;
+use function is_array;
 use function is_bool;
 use function is_callable;
 use function is_string;
@@ -139,6 +140,14 @@ final class RequestDispatcher
 
         // NOTE: Request handling
         $action = sprintf('on%s', ucfirst(strtolower($routerMatch->method)));
+        if (
+            $serverRequest->getMethod() === Method::POST &&
+            is_array($serverRequest->getParsedBody()) &&
+            isset($serverRequest->getParsedBody()['_method'])
+        ) {
+            $action = sprintf('on%s', ucfirst(strtolower($serverRequest->getParsedBody()['_method'])));;
+        }
+
         if (! method_exists($object, $action)) {
             throw new RouteHandlerMethodNotAllowedException('Method not allowed.');
         }
