@@ -29,6 +29,7 @@ use MyVendor\MyPackage\Router\InvalidResponseException;
 use MyVendor\MyPackage\Router\RouteHandlerMethodNotAllowedException;
 use MyVendor\MyPackage\Router\RouteHandlerNotFoundException;
 use MyVendor\MyPackage\Router\RouterInterface;
+use MyVendor\MyPackage\Router\RouterMatch;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
@@ -139,7 +140,7 @@ final class RequestDispatcher
         }
 
         // NOTE: Request handling
-        $action = sprintf('on%s', ucfirst(strtolower($routerMatch->method)));
+        $action = sprintf('on%s', ucfirst(strtolower($this->getMethod($routerMatch))));
         if (
             $serverRequest->getMethod() === Method::POST &&
             is_array($serverRequest->getParsedBody()) &&
@@ -195,6 +196,20 @@ final class RequestDispatcher
         }
 
         return $response->withStatus($object->code);
+    }
+
+    private function getMethod(RouterMatch $routerMatch): string
+    {
+        if ($this->serverRequest->getMethod() !== Method::POST) {
+            return $routerMatch->method;
+        }
+
+        $body = $this->serverRequest->getParsedBody();
+        if (! is_array($body) || ! isset($body['_method'])) {
+            return $routerMatch->method;
+        }
+
+        return $body['_method'];
     }
 
     private function getRenderer(): RendererInterface
