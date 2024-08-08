@@ -145,7 +145,7 @@ final class RequestDispatcher
             is_array($serverRequest->getParsedBody()) &&
             isset($serverRequest->getParsedBody()['_method'])
         ) {
-            $action = sprintf('on%s', ucfirst(strtolower($serverRequest->getParsedBody()['_method'])));;
+            $action = sprintf('on%s', ucfirst(strtolower($serverRequest->getParsedBody()['_method'])));
         }
 
         if (! method_exists($object, $action)) {
