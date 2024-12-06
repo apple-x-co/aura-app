@@ -18,6 +18,8 @@ $map->attach(null, null, function (Map $map) {
 
     $map->get('hello', '/hello', Handler\Hello::class)
         ->extras(['a' => 'b']);
+
+    $map->get('download', '/download', Handler\Download::class);
 });
 
 $map->attach('/admin', '/' . $adminPrefix, function (Map $map) {

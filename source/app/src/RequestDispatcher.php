@@ -14,6 +14,7 @@ use Koriym\HttpConstants\StatusCode;
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Laminas\Diactoros\Response\TextResponse;
+use Laminas\Diactoros\Stream;
 use MyVendor\MyPackage\Auth\AdminAuthenticationHandler;
 use MyVendor\MyPackage\Auth\AdminAuthenticationRequestHandlerInterface;
 use MyVendor\MyPackage\Auth\AuthenticationException;
@@ -40,6 +41,7 @@ use function class_exists;
 use function is_array;
 use function is_bool;
 use function is_callable;
+use function is_resource;
 use function is_string;
 use function method_exists;
 use function sprintf;
@@ -141,12 +143,13 @@ final class RequestDispatcher
 
         // NOTE: Request handling
         $action = sprintf('on%s', ucfirst(strtolower($this->getMethod($routerMatch))));
+        $parsedBody = $serverRequest->getParsedBody();
         if (
-            $serverRequest->getMethod() === Method::POST &&
-            is_array($serverRequest->getParsedBody()) &&
-            isset($serverRequest->getParsedBody()['_method'])
+            is_array($parsedBody) &&
+            isset($parsedBody['_method']) &&
+            $serverRequest->getMethod() === Method::POST
         ) {
-            $action = sprintf('on%s', ucfirst(strtolower($serverRequest->getParsedBody()['_method'])));
+            $action = sprintf('on%s', ucfirst(strtolower($parsedBody['_method'])));
         }
 
         if (! method_exists($object, $action)) {
@@ -190,6 +193,16 @@ final class RequestDispatcher
         assert($renderer instanceof RendererInterface);
 
         $response = new Response();
+
+        if (is_resource($object->stream)) {
+            $response = $response->withBody(new Stream($object->stream));
+            foreach ($object->headers as $name => $value) {
+                $response = $response->withHeader($name, $value);
+            }
+
+            return $response->withStatus($object->code);
+        }
+
         $response->getBody()->write($renderer->render($object));
         foreach ($object->headers as $name => $value) {
             $response = $response->withHeader($name, $value);
