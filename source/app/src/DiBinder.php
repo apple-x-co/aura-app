@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace MyVendor\MyPackage;
 
+use AppCore\Application\Shared\DbConnectionInterface;
 use AppCore\Domain\Hasher\PasswordHasher;
+use AppCore\Infrastructure\Persistence\DbConnection;
 use Aura\Accept\Accept;
 use Aura\Accept\AcceptFactory;
 use Aura\Di\Container;
@@ -16,8 +18,15 @@ use Aura\Input\Filter;
 use Aura\Router\RouterContainer;
 use Aura\Session\Session;
 use Aura\Session\SessionFactory;
+use Aura\Sql\ExtendedPdo;
+use Aura\Sql\ExtendedPdoInterface;
+use Aura\SqlQuery\Common\DeleteInterface;
+use Aura\SqlQuery\Common\InsertInterface;
+use Aura\SqlQuery\Common\SelectInterface;
+use Aura\SqlQuery\Common\UpdateInterface;
+use Aura\SqlQuery\QueryFactory;
 use Koriym\QueryLocator\QueryLocator;
-use Laminas\Diactoros\ServerRequestFactory;
+use Koriym\QueryLocator\QueryLocatorInterface;
 use MyVendor\MyPackage\Auth\AdminAuthenticationHandler;
 use MyVendor\MyPackage\Auth\AdminAuthenticator;
 use MyVendor\MyPackage\Auth\AdminAuthenticatorInterface;
@@ -34,6 +43,7 @@ use MyVendor\MyPackage\Responder\ResponderInterface;
 use MyVendor\MyPackage\Responder\WebResponder;
 use MyVendor\MyPackage\Router\CliRouter;
 use MyVendor\MyPackage\Router\RouterInterface;
+use MyVendor\MyPackage\Router\ServerRequestFactory;
 use MyVendor\MyPackage\Router\WebRouter;
 use MyVendor\MyPackage\TemplateEngine\QiqCustomHelper;
 use MyVendor\MyPackage\TemplateEngine\QiqRenderer;
@@ -57,15 +67,15 @@ final class DiBinder
         $di = $builder->newInstance(true); // NOTE: "$di->types['xxx']" を使うために有効化
 
         $di->values['timestamp'] = time();
-        $di->values['baseUrl'] = getenv('BASE_URL');
+        $di->values['siteUrl'] = getenv('SITE_URL');
         $di->values['pdoDsn'] = getenv('DB_DSN');
         $di->values['pdoUsername'] = getenv('DB_USER');
         $di->values['pdoPassword'] = getenv('DB_PASS');
 
         $this->appMeta($di, $appDir, $tmpDir);
         $this->authentication($di);
+        $this->db($di, $appDir);
         $this->form($di);
-        $this->queryLocator($di, $appDir);
         $this->renderer($di, $appDir);
         $this->request($di);
         $this->requestDispatcher($di);
@@ -101,6 +111,29 @@ final class DiBinder
         $di->types[AdminAuthenticatorInterface::class] = $di->lazyGet(AdminAuthenticator::class);
     }
 
+    private function db(Container $di, string $appDir): void
+    {
+        $di->params[ExtendedPdo::class]['dsn'] = $di->lazyValue('pdoDsn');
+        $di->params[ExtendedPdo::class]['username'] = $di->lazyValue('pdoUsername');
+        $di->params[ExtendedPdo::class]['password'] = $di->lazyValue('pdoPassword');
+        $di->set(ExtendedPdoInterface::class, $di->lazyNew(ExtendedPdo::class));
+        $di->types[ExtendedPdoInterface::class] = $di->lazyGet(ExtendedPdoInterface::class);
+
+        $di->types[SelectInterface::class] = $di->lazy(static fn () => (new QueryFactory('mysql'))->newSelect());
+        $di->types[InsertInterface::class] = $di->lazy(static fn () => (new QueryFactory('mysql'))->newInsert());
+        $di->types[UpdateInterface::class] = $di->lazy(static fn () => (new QueryFactory('mysql'))->newUpdate());
+        $di->types[DeleteInterface::class] = $di->lazy(static fn () => (new QueryFactory('mysql'))->newDelete());
+
+        $di->types[DbConnectionInterface::class] = $di->lazyNew(DbConnection::class);
+
+        $di->values['sqlDir'] = $appDir . '/var/sql';
+        $di->params[QueryLocator::class]['sqlDir'] = $di->lazyValue('sqlDir');
+
+        $di->set(QueryLocatorInterface::class, $di->lazyNew(QueryLocator::class));
+
+        $di->types[QueryLocatorInterface::class] = $di->lazyGet(QueryLocatorInterface::class);
+    }
+
     private function form(Container $di): void
     {
         $di->params[ExtendedForm::class]['builder'] = $di->lazyNew(Builder::class);
@@ -112,13 +145,6 @@ final class DiBinder
         $di->setters[SetAntiCsrfInject::class]['setAntiCsrf'] = $di->lazyNew(AntiCsrf::class);
 
         $di->types[LoginForm::class] = $di->lazyNew(LoginForm::class);
-    }
-
-    private function queryLocator(Container $di, string $appDir): void
-    {
-        $di->values['sqlDir'] = $appDir . '/var/sql';
-
-        $di->params[QueryLocator::class]['sqlDir'] = $di->lazyValue('sqlDir');
     }
 
     private function renderer(Container $di, string $appDir): void
@@ -137,7 +163,7 @@ final class DiBinder
             );
         });
         $di->params[QiqRenderer::class]['data'] = $di->lazyArray([
-            'baseUrl' => $di->lazyValue('baseUrl'),
+            'siteUrl' => $di->lazyValue('siteUrl'),
             'timestamp' => $di->lazyValue('timestamp'),
         ]);
         $di->set(QiqRenderer::class, $di->lazyNew(QiqRenderer::class));

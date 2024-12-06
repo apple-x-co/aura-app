@@ -10,8 +10,6 @@ use function header;
 use function http_response_code;
 use function sprintf;
 
-use const PHP_EOL;
-
 final class WebResponder implements ResponderInterface
 {
     public function handle(ResponseInterface $response): void
@@ -24,6 +22,6 @@ final class WebResponder implements ResponderInterface
             }
         }
 
-        echo $response->getBody() . PHP_EOL;
+        echo $response->getBody();
     }
 }

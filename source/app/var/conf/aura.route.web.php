@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Aura\Router\Map;
+use Koriym\HttpConstants\Method;
 use MyVendor\MyPackage\Handler;
 use MyVendor\MyPackage\Handler\Admin as AdminHandler;
 
@@ -17,6 +18,8 @@ $map->attach(null, null, function (Map $map) {
 
     $map->get('hello', '/hello', Handler\Hello::class)
         ->extras(['a' => 'b']);
+
+    $map->get('download', '/download', Handler\Download::class);
 });
 
 $map->attach('/admin', '/' . $adminPrefix, function (Map $map) {
@@ -24,10 +27,8 @@ $map->attach('/admin', '/' . $adminPrefix, function (Map $map) {
     $map->auth($auth);
 
     $map->get('/login', '/login', AdminHandler\Login::class)
-        ->auth([]);
-
-    $map->post('/_login', '/login', AdminHandler\Login::class)
-        ->auth(['login' => true]);
+        ->auth(['login' => true])
+        ->allows([Method::POST]);
 
     $map->post('/logout', '/logout', AdminHandler\Logout::class)
         ->auth(array_merge($auth, ['logout' => true]));

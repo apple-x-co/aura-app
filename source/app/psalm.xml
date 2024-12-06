@@ -13,5 +13,6 @@
         <ignoreFiles>
             <directory name="vendor" />
         </ignoreFiles>
+        <directory name="ddd/core/src" />
     </projectFiles>
 </psalm>

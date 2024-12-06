@@ -9,10 +9,12 @@ use Aura\Accept\Media\MediaValue;
 use Aura\Di\Container;
 use Koriym\HttpConstants\MediaType;
 use Koriym\HttpConstants\Method;
+use Koriym\HttpConstants\ResponseHeader;
 use Koriym\HttpConstants\StatusCode;
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Laminas\Diactoros\Response\TextResponse;
+use Laminas\Diactoros\Stream;
 use MyVendor\MyPackage\Auth\AdminAuthenticationHandler;
 use MyVendor\MyPackage\Auth\AdminAuthenticationRequestHandlerInterface;
 use MyVendor\MyPackage\Auth\AuthenticationException;
@@ -28,6 +30,7 @@ use MyVendor\MyPackage\Router\InvalidResponseException;
 use MyVendor\MyPackage\Router\RouteHandlerMethodNotAllowedException;
 use MyVendor\MyPackage\Router\RouteHandlerNotFoundException;
 use MyVendor\MyPackage\Router\RouterInterface;
+use MyVendor\MyPackage\Router\RouterMatch;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
@@ -35,7 +38,10 @@ use Throwable;
 use function assert;
 use function call_user_func_array;
 use function class_exists;
+use function is_array;
+use function is_bool;
 use function is_callable;
+use function is_resource;
 use function is_string;
 use function method_exists;
 use function sprintf;
@@ -61,7 +67,7 @@ final class RequestDispatcher
     {
         $routerMatch = $this->router->match($this->serverRequest);
         $route = $routerMatch->route;
-        if ($route === false) {
+        if (is_bool($route)) {
             return new TextResponse(
                 'Route not found :(',
                 StatusCode::NOT_FOUND,
@@ -136,7 +142,16 @@ final class RequestDispatcher
         }
 
         // NOTE: Request handling
-        $action = sprintf('on%s', ucfirst(strtolower($routerMatch->method)));
+        $action = sprintf('on%s', ucfirst(strtolower($this->getMethod($routerMatch))));
+        $parsedBody = $serverRequest->getParsedBody();
+        if (
+            is_array($parsedBody) &&
+            isset($parsedBody['_method']) &&
+            $serverRequest->getMethod() === Method::POST
+        ) {
+            $action = sprintf('on%s', ucfirst(strtolower($parsedBody['_method'])));
+        }
+
         if (! method_exists($object, $action)) {
             throw new RouteHandlerMethodNotAllowedException('Method not allowed.');
         }
@@ -145,16 +160,16 @@ final class RequestDispatcher
             // NOTE: RequestHandler で ServerRequest や Route の取得をしたい場合は "Typehinted constructor" を使う
             $callable = [$object, $action];
             if (is_callable($callable)) {
-                call_user_func_array($callable, $route->attributes);
+                $object = call_user_func_array($callable, $route->attributes);
             }
 
             if (! $object instanceof RequestHandler) {
                 throw new InvalidResponseException('Invalid response type.');
             }
 
-            if (isset($object->headers['location'])) {
+            if (isset($object->headers[ResponseHeader::LOCATION])) {
                 return new RedirectResponse(
-                    $object->headers['location'],
+                    $object->headers[ResponseHeader::LOCATION],
                     $object->code,
                     $object->headers,
                 );
@@ -178,12 +193,36 @@ final class RequestDispatcher
         assert($renderer instanceof RendererInterface);
 
         $response = new Response();
+
+        if (is_resource($object->stream)) {
+            $response = $response->withBody(new Stream($object->stream));
+            foreach ($object->headers as $name => $value) {
+                $response = $response->withHeader($name, $value);
+            }
+
+            return $response->withStatus($object->code);
+        }
+
         $response->getBody()->write($renderer->render($object));
         foreach ($object->headers as $name => $value) {
             $response = $response->withHeader($name, $value);
         }
 
         return $response->withStatus($object->code);
+    }
+
+    private function getMethod(RouterMatch $routerMatch): string
+    {
+        if ($this->serverRequest->getMethod() !== Method::POST) {
+            return $routerMatch->method;
+        }
+
+        $body = $this->serverRequest->getParsedBody();
+        if (! is_array($body) || ! isset($body['_method'])) {
+            return $routerMatch->method;
+        }
+
+        return $body['_method'];
     }
 
     private function getRenderer(): RendererInterface

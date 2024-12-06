@@ -18,6 +18,9 @@ class RequestHandler implements Stringable
 
     /** @var array<string, mixed>|null  */
     public array|null $body = null;
+
+    /** @var resource|null */
+    public $stream;
     public RendererInterface|null $renderer = null;
     public string|null $string = null;
 
