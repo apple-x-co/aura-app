@@ -33,6 +33,7 @@ use MyVendor\MyPackage\Router\RouterInterface;
 use MyVendor\MyPackage\Router\RouterMatch;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamFactoryInterface;
 use Throwable;
 
 use function assert;
@@ -57,6 +58,7 @@ final class RequestDispatcher
         private readonly Container $di,
         private readonly RouterInterface $router,
         private readonly ServerRequestInterface $serverRequest,
+        private readonly StreamFactoryInterface $streamFactory,
         private readonly HtmlRenderer $htmlRenderer,
         private readonly JsonRenderer $jsonRenderer,
         private readonly TextRenderer $textRenderer,
@@ -198,12 +200,12 @@ final class RequestDispatcher
         }
 
         if (is_resource($object->stream)) {
-            $response = $response->withBody(new Stream($object->stream));
+            $response = $response->withBody($this->streamFactory->createStreamFromResource($object->stream));
 
             return $response->withStatus($object->code);
         }
 
-        $response->getBody()->write($renderer->render($object));
+        $response = $response->withBody($this->streamFactory->createStream($renderer->render($object)));
 
         return $response->withStatus($object->code);
     }
