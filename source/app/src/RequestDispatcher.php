@@ -193,20 +193,17 @@ final class RequestDispatcher
         assert($renderer instanceof RendererInterface);
 
         $response = new Response();
+        foreach ($object->headers as $name => $value) {
+            $response = $response->withHeader($name, $value);
+        }
 
         if (is_resource($object->stream)) {
             $response = $response->withBody(new Stream($object->stream));
-            foreach ($object->headers as $name => $value) {
-                $response = $response->withHeader($name, $value);
-            }
 
             return $response->withStatus($object->code);
         }
 
         $response->getBody()->write($renderer->render($object));
-        foreach ($object->headers as $name => $value) {
-            $response = $response->withHeader($name, $value);
-        }
 
         return $response->withStatus($object->code);
     }
