@@ -27,6 +27,7 @@ use Aura\SqlQuery\Common\UpdateInterface;
 use Aura\SqlQuery\QueryFactory;
 use Koriym\QueryLocator\QueryLocator;
 use Koriym\QueryLocator\QueryLocatorInterface;
+use Laminas\Diactoros\ResponseFactory;
 use Laminas\Diactoros\StreamFactory;
 use MyVendor\MyPackage\Auth\AdminAuthenticationHandler;
 use MyVendor\MyPackage\Auth\AdminAuthenticator;
@@ -48,6 +49,7 @@ use MyVendor\MyPackage\Router\ServerRequestFactory;
 use MyVendor\MyPackage\Router\WebRouter;
 use MyVendor\MyPackage\TemplateEngine\QiqCustomHelper;
 use MyVendor\MyPackage\TemplateEngine\QiqRenderer;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Qiq\Template;
@@ -195,12 +197,15 @@ final class DiBinder
 
     private function requestDispatcher(Container $di): void
     {
+        $di->set(ResponseFactoryInterface::class, $di->lazyNew(ResponseFactory::class));
+
         $di->params[CliRouter::class]['routerContainer'] = $di->lazyGet(RouterContainer::class);
         $di->params[WebRouter::class]['routerContainer'] = $di->lazyGet(RouterContainer::class);
 
         $di->params[RequestDispatcher::class]['adminAuthenticationHandler'] = $di->lazyNew(AdminAuthenticationHandler::class);
         $di->params[RequestDispatcher::class]['di'] = $di->lazy(static fn () => $di);
         $di->params[RequestDispatcher::class]['accept'] = $di->lazyGet(Accept::class);
+        $di->params[RequestDispatcher::class]['responseFactory'] = $di->lazyGet(ResponseFactoryInterface::class);
         $di->params[RequestDispatcher::class]['streamFactory'] = $di->lazyGet(StreamFactoryInterface::class);
 
         $di->types[RouterInterface::class] = $di->lazyGet(RouterInterface::class);

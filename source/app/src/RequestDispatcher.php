@@ -11,10 +11,8 @@ use Koriym\HttpConstants\MediaType;
 use Koriym\HttpConstants\Method;
 use Koriym\HttpConstants\ResponseHeader;
 use Koriym\HttpConstants\StatusCode;
-use Laminas\Diactoros\Response;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Laminas\Diactoros\Response\TextResponse;
-use Laminas\Diactoros\Stream;
 use MyVendor\MyPackage\Auth\AdminAuthenticationHandler;
 use MyVendor\MyPackage\Auth\AdminAuthenticationRequestHandlerInterface;
 use MyVendor\MyPackage\Auth\AuthenticationException;
@@ -31,6 +29,7 @@ use MyVendor\MyPackage\Router\RouteHandlerMethodNotAllowedException;
 use MyVendor\MyPackage\Router\RouteHandlerNotFoundException;
 use MyVendor\MyPackage\Router\RouterInterface;
 use MyVendor\MyPackage\Router\RouterMatch;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
@@ -57,6 +56,7 @@ final class RequestDispatcher
         private readonly CloudflareTurnstileVerificationHandler $cloudflareTurnstileVerificationHandler,
         private readonly Container $di,
         private readonly RouterInterface $router,
+        private readonly ResponseFactoryInterface $responseFactory,
         private readonly ServerRequestInterface $serverRequest,
         private readonly StreamFactoryInterface $streamFactory,
         private readonly HtmlRenderer $htmlRenderer,
@@ -194,7 +194,7 @@ final class RequestDispatcher
         $renderer = $object->renderer ?? $this->getRenderer();
         assert($renderer instanceof RendererInterface);
 
-        $response = new Response();
+        $response = $this->responseFactory->createResponse();
         foreach ($object->headers as $name => $value) {
             $response = $response->withHeader($name, $value);
         }
