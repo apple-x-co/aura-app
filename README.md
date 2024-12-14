@@ -18,6 +18,7 @@ Aura.PHP application
 
 ### Frontend
 
+* Stylesheet / [Tailwind CSS](https://tailwindcss.com)
 * JavaScript bundler / [Rollup](https://rollupjs.org)
 
 ### Features

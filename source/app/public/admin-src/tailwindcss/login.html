@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <title>Title</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <link href="https://fonts.googleapis.com/css?family=Noto+Sans+JP:100|Noto+Sans+JP:400|Noto+Sans+JP:500|Noto+Sans+JP:700|Noto+Sans+JP:800|Noto+Sans+JP:900|Roboto:100|Roboto:400|Roboto:700|Roboto:900&display=swap&subset=japanese" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+</head>
+<body class="bg-slate-50 text-slate-700 tracking-wide selection:bg-fuchsia-300 selection:text-fuchsia-900">
+<div class="h-[100svh] grid place-content-center">
+    <div class="relative w-80 md:w-96 h-min p-5 md:p-8 rounded-xl bg-white shadow-[0_1px_3px_rgba(15,23,42,0.03),0_1px_2px_rgba(15,23,42,0.06)] ring-1 ring-slate-600/[0.04]">
+        <h2 class="text-xl text-center tracking-widest font-black bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">AuraApp</h2>
+
+        <form method="post">
+            <div class="p-4 mb-4 text-sm text-rose-500 rounded-lg bg-rose-50 mt-5" role="alert">
+                <svg class="inline w-6 h-6 ">
+                    <use xlink:href="/itae/admin/images/heroicons/icon.svg#shield-exclamation"></use>
+                </svg>
+                <span class="font-sans font-bold">TEXT</span>
+            </div>
+
+            <div class="mt-5">
+                <label class="block">
+                    <span class="block text-sm font-sans font-normal text-slate-700 select-none">Username</span>
+                    <input type="text" name="username" autofocus="" autocomplete="username" placeholder="username" required="required" minlength="5" maxlength="100" title="有効なユーザー名を入力してください" class="rounded w-full placeholder:text-slate-500 placeholder:font-thin transition duration-300 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500">
+                    <p class="block text-sm text-rose-500 italic">TEXT</p>
+                </label>
+                <label class="block mt-5">
+                    <span class="block text-sm font-sans font-normal text-slate-700 select-none">Password</span>
+                    <input type="password" name="password" autocomplete="current-password" placeholder="password" required="required" minlength="5" maxlength="100" title="有効なパスワードを入力してください" class="rounded w-full placeholder:text-slate-500 placeholder:font-thin transition duration-300 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500">
+                    <p class="block text-sm text-rose-500 italic">TEXT</p>
+                </label>
+                <div class="ml-[-11px] lg:ml-0 mt-5"></div>
+                <label class="block mt-5 text-center">
+                    <input id="continue" type="submit" name="continue" value="Login" class="py-2 px-4 bg-indigo-500 text-white text-sm font-sans font-bold tracking-wider rounded-full shadow-lg shadow-indigo-500/50 focus:outline-none hover:bg-indigo-600 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none">
+                </label>
+            </div>
+        </form>
+        <div class="absolute top-full right-0 w-full h-px rounded-full max-w-sm bg-gradient-to-r from-transparent from-10% via-purple-500 to-transparent drop-shadow-xl"></div>
+    </div>
+</div>
+</body>
+</html>
