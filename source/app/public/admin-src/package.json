@@ -4,14 +4,17 @@
         "@rollup/plugin-node-resolve": "^15.2.3",
         "@rollup/plugin-replace": "^5.0.7",
         "@rollup/plugin-terser": "^0.4.4",
+        "@tailwindcss/forms": "^0.5.9",
         "rollup": "^4.19.0",
         "rollup-plugin-sass": "^1.13.1",
-        "sass": "^1.77.8"
+        "sass": "^1.77.8",
+        "tailwindcss": "^3.4.16"
     },
     "engines": {
         "node": "22.5.1"
     },
     "scripts": {
-        "build": "rollup --config"
+        "build": "rollup --config",
+        "tailwindcss": "tailwindcss -i ./tailwindcss/main.css -o ../admin/css/tailwind.css"
     }
 }

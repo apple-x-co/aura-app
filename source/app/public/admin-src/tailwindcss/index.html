@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <title>Title</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <link href="https://fonts.googleapis.com/css?family=Noto+Sans+JP:100|Noto+Sans+JP:400|Noto+Sans+JP:500|Noto+Sans+JP:700|Noto+Sans+JP:800|Noto+Sans+JP:900|Roboto:100|Roboto:400|Roboto:700|Roboto:900&display=swap&subset=japanese" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        setupMenu();
+      });
+
+      function setupMenu () {
+        const menuOpener = document.querySelector('#menuOpener');
+        menuOpener.addEventListener('click', () => {
+          const menuBg = document.querySelector('#menuBg');
+          menuBg.classList.remove('hidden');
+
+          const menu = menuBg.querySelector('#menu');
+
+          window.requestAnimationFrame(() => {
+            menu.classList.add('scale-100');
+            menu.classList.add('opacity-100');
+            menu.classList.remove('scale-0');
+            menu.classList.remove('opacity-0');
+          });
+        });
+
+        const menuCloser = document.querySelector('#menuCloser');
+        menuCloser.addEventListener('click', () => {
+          const menuBg = document.querySelector('#menuBg');
+          const menu = menuBg.querySelector('#menu');
+
+          window.requestAnimationFrame(() => {
+            menu.classList.add('scale-0');
+            menu.classList.add('opacity-0');
+            menu.classList.remove('scale-100');
+            menu.classList.remove('opacity-100');
+
+            setTimeout(() => menuBg.classList.add('hidden'), 200);
+          });
+        });
+      }
+    </script>
+</head>
+<body id="app" class="bg-slate-50 text-slate-700 tracking-wide selection:bg-fuchsia-300 selection:text-fuchsia-900">
+<div id="menuBg" class="fixed z-50 inset-0 hidden md:hidden">
+    <div class="fixed inset-0 bg-slate-900/25 backdrop-blur transition-opacity opacity-100"></div>
+    <div id="menu" class="fixed top-4 right-4 w-full max-w-xs bg-white rounded-3xl shadow-lg p-6 text-base font-semibold text-slate-900 dark:bg-slate-800 dark:text-slate-400 dark:highlight-white/5 transition-all origin-top-right opacity-0 scale-0">
+        <div class="flex justify-between">
+            <div>
+                <ul class="grid grid-cols-1 gap-5">
+                    <li class="group">
+                        <a href="/admin/index"
+                           class="text-slate-600 text-base tracking-wide p-2 -ml-px font-extrabold">
+                            <svg class="inline w-5 h-5 ">
+                                <use xlink:href="/admin/images/heroicons/icon.svg#home-modern"></use>
+                            </svg>
+                            &nbsp;HOME
+                        </a>
+                        <div class="mt-1 h-1 rounded-full bg-indigo-500"></div>
+                    </li>
+                    <li class="group">
+                        <a href="/admin/menu-item1"
+                           class="text-slate-600 text-base tracking-wide p-2 -ml-px font-medium">
+                            <svg class="inline w-5 h-5 ">
+                                <use xlink:href="/admin/images/heroicons/icon.svg#paint-brush"></use>
+                            </svg>
+                            &nbsp;MENU1
+                        </a>
+                        <div class="mt-1 h-1 rounded-full "></div>
+                    </li>
+                    <li class="group">
+                        <a href="/admin/menu-item2"
+                           class="text-slate-600 text-base tracking-wide p-2 -ml-px font-medium">
+                            <svg class="inline w-5 h-5 ">
+                                <use xlink:href="/admin/images/heroicons/icon.svg#calendar"></use>
+                            </svg>
+                            &nbsp;MENU2
+                        </a>
+                        <div class="mt-1 h-1 rounded-full "></div>
+                    </li>
+                    <li class="group">
+                        <a href="/admin/menu-item3"
+                           class="text-slate-600 text-base tracking-wide p-2 -ml-px font-medium">
+                            <svg class="inline w-5 h-5 ">
+                                <use xlink:href="/admin/images/heroicons/icon.svg#trophy"></use>
+                            </svg>
+                            &nbsp;MENU3
+                        </a>
+                        <div class="mt-1 h-1 rounded-full "></div>
+                    </li>
+                    <li class="group">
+                        <a href="/admin/menu-item4"
+                           class="text-slate-600 text-base tracking-wide p-2 -ml-px font-medium">
+                            <svg class="inline w-5 h-5 ">
+                                <use xlink:href="/admin/images/heroicons/icon.svg#swatch"></use>
+                            </svg>
+                            &nbsp;MENU4
+                        </a>
+                        <div class="mt-1 h-1 rounded-full "></div>
+                    </li>
+                    <li class="group">
+                        <a href="/admin/menu-item5"
+                           class="text-slate-600 text-base tracking-wide p-2 -ml-px font-medium">
+                            <svg class="inline w-5 h-5 ">
+                                <use xlink:href="/admin/images/heroicons/icon.svg#user-group"></use>
+                            </svg>
+                            &nbsp;MENU5
+                        </a>
+                        <div class="mt-1 h-1 rounded-full "></div>
+                    </li>
+                </ul>
+                <div class="border-t border-slate-200 dark:border-slate-800 pt-5 mt-5">
+                    <form method="post" action="/admin/logout">
+                        <button class="text-slate-600 text-base tracking-wide p-2 -ml-px font-medium">
+                            <svg class="inline w-6 h-6 ">
+                                <use xlink:href="/admin/images/heroicons/icon.svg#arrow-left-on-rectangle"></use>
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div>
+                <button type="button" id="menuCloser">
+                    <svg class="inline w-6 h-6 ">
+                        <use xlink:href="/admin/images/heroicons/icon.svg#x-mark"></use>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<header class="sticky top-0 z-40 w-full backdrop-blur flex-none transition-colors duration-500 lg:z-50 lg:border-b lg:border-slate-900/10 bg-white/70 supports-backdrop-blur:bg-white/60">
+    <div class="max-w-7xl mx-auto">
+        <div class="py-4 border-b border-slate-900/10 px-4 lg:px-8 lg:border-0">
+            <div class="relative flex items-center">
+                <a class="mr-3 flex-none overflow-hidden lg:w-auto font-black text-lg bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"
+                   href="/admin/index" data-tippy-content="トップページに戻る">
+                    AuraApp
+                </a>
+                <div class="relative block md:hidden items-center ml-auto">
+                    <button type="button" id="menuOpener">
+                        <svg class="inline w-6 h-6 ">
+                            <use xlink:href="/admin/images/heroicons/icon.svg#bars-4"></use>
+                        </svg>
+                    </button>
+                </div>
+                <div class="relative hidden md:flex items-center ml-auto">
+                    <nav class="block leading-6 relative">
+                        <ul class="flex flex-column space-x-1 md:space-x-3 lg:space-x-5">
+                            <li class="group">
+                                <a href="/admin/index"
+                                   class="text-slate-600 text-sm tracking-wide p-2 -ml-px font-extrabold">
+                                    <svg class="inline w-5 h-5 ">
+                                        <use xlink:href="/admin/images/heroicons/icon.svg#home-modern"></use>
+                                    </svg>
+                                    &nbsp;HOME
+                                </a>
+                                <div class="mt-1 h-1 rounded-full bg-indigo-500"></div>
+                            </li>
+                            <li class="group">
+                                <a href="/admin/menu-item1"
+                                   class="text-slate-600 text-sm tracking-wide p-2 -ml-px font-medium group-hover:bg-indigo-100 group-hover:outline group-hover:outline-1 group-hover:outline-indigo-200 group-hover:rounded-lg">
+                                    <svg class="inline w-5 h-5 ">
+                                        <use xlink:href="/admin/images/heroicons/icon.svg#paint-brush"></use>
+                                    </svg>
+                                    &nbsp;MENU1
+                                </a>
+                                <div class="mt-1 h-1 rounded-full "></div>
+                            </li>
+                            <li class="group">
+                                <a href="/admin/menu-item2"
+                                   class="text-slate-600 text-sm tracking-wide p-2 -ml-px font-medium group-hover:bg-indigo-100 group-hover:outline group-hover:outline-1 group-hover:outline-indigo-200 group-hover:rounded-lg">
+                                    <svg class="inline w-5 h-5 ">
+                                        <use xlink:href="/admin/images/heroicons/icon.svg#calendar"></use>
+                                    </svg>
+                                    &nbsp;MENU2
+                                </a>
+                                <div class="mt-1 h-1 rounded-full "></div>
+                            </li>
+                            <li class="group">
+                                <a href="/admin/menu-item3"
+                                   class="text-slate-600 text-sm tracking-wide p-2 -ml-px font-medium group-hover:bg-indigo-100 group-hover:outline group-hover:outline-1 group-hover:outline-indigo-200 group-hover:rounded-lg">
+                                    <svg class="inline w-5 h-5 ">
+                                        <use xlink:href="/admin/images/heroicons/icon.svg#trophy"></use>
+                                    </svg>
+                                    &nbsp;MENU3
+                                </a>
+                                <div class="mt-1 h-1 rounded-full "></div>
+                            </li>
+                            <li class="group">
+                                <a href="/admin/menu-item4"
+                                   class="text-slate-600 text-sm tracking-wide p-2 -ml-px font-medium group-hover:bg-indigo-100 group-hover:outline group-hover:outline-1 group-hover:outline-indigo-200 group-hover:rounded-lg">
+                                    <svg class="inline w-5 h-5 ">
+                                        <use xlink:href="/admin/images/heroicons/icon.svg#swatch"></use>
+                                    </svg>
+                                    &nbsp;MENU4
+                                </a>
+                                <div class="mt-1 h-1 rounded-full "></div>
+                            </li>
+                            <li class="group">
+                                <a href="/admin/menu-item5"
+                                   class="text-slate-600 text-sm tracking-wide p-2 -ml-px font-medium group-hover:bg-indigo-100 group-hover:outline group-hover:outline-1 group-hover:outline-indigo-200 group-hover:rounded-lg">
+                                    <svg class="inline w-5 h-5 ">
+                                        <use xlink:href="/admin/images/heroicons/icon.svg#user-group"></use>
+                                    </svg>
+                                    &nbsp;MENU5
+                                </a>
+                                <div class="mt-1 h-1 rounded-full "></div>
+                            </li>
+                        </ul>
+                    </nav>
+
+                    <div class="flex items-center border-l border-slate-200 ml-6 pl-6 dark:border-slate-800">
+                        <form method="post" action="/admin/logout">
+                            <button class="text-slate-600 text-sm tracking-wide p-2 -ml-px font-medium hover:bg-indigo-100 hover:outline hover:outline-1 hover:outline-indigo-200 hover:rounded-lg" data-tippy-content="ログアウト">
+                                <svg class="inline w-6 h-6 ">
+                                    <use xlink:href="/admin/images/heroicons/icon.svg#arrow-left-on-rectangle"></use>
+                                </svg>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<div class="max-w-7xl mx-auto px-0 lg:px-8 pt-7 flex flex-row grow">
+    <div class="block lg:flex lg:flex-col lg:grow w-full">
+        <div class="mx-5 lg:mx-0 lg:grow whitespace-normal break-words">
+            <main>
+                <section>
+                    <h3 class="font-bold border-b pb-2 mb-2">テキスト (太さ)</h3>
+
+                    <p class="text-sm lg:text-base font-thin">フォント太さ 細字 (100)</p>
+                    <p class="text-sm lg:text-base font-normal">フォント太さ 通常 (400)</p>
+                    <p class="text-sm lg:text-base font-bold">フォント太さ 太字 (700)</p>
+                    <p class="text-sm lg:text-base font-extrabold">フォント太さ 極太 (800)</p>
+                </section>
+
+                <section class="mt-10">
+                    <h3 class="font-bold border-b pb-2 mb-2">テキスト (行の高さ)</h3>
+
+                    <p class="text-sm lg:text-base/relaxed">説明テキスト (relaxed) </p>
+                    <p class="text-sm lg:text-base/normal">説明テキスト (normal)</p>
+                    <p class="text-sm lg:text-base/loose">説明テキスト (loose)</p>
+                </section>
+
+                <section class="mt-10">
+                    <h3 class="font-bold border-b pb-2 mb-2">テキスト (装飾)</h3>
+
+                    <p class="text-sm lg:text-base font-thin">下線<span
+                            class="underline decoration-8 decoration-pink-500/80 underline-offset-[-5px]">テキスト</span>
+                    </p>
+                </section>
+
+                <section class="mt-10">
+                    <h3 class="font-bold border-b pb-2 mb-2">アイコン</h3>
+                    <svg class="inline w-6 h-6 ">
+                        <use xlink:href="/admin/images/heroicons/icon.svg#arrow-left-on-rectangle"></use>
+                    </svg>
+                    <svg class="inline w-6 h-6 ">
+                        <use xlink:href="/admin/images/heroicons/icon.svg#bell-alert"></use>
+                    </svg>
+                    <svg class="inline w-6 h-6 ">
+                        <use xlink:href="/admin/images/heroicons/icon.svg#calendar"></use>
+                    </svg>
+                    <svg class="inline w-6 h-6 ">
+                        <use xlink:href="/admin/images/heroicons/icon.svg#exclamation-circle"></use>
+                    </svg>
+                    <svg class="inline w-6 h-6 ">
+                        <use xlink:href="/admin/images/heroicons/icon.svg#exclamation-triangle"></use>
+                    </svg>
+                    <svg class="inline w-6 h-6 ">
+                        <use xlink:href="/admin/images/heroicons/icon.svg#home-modern"></use>
+                    </svg>
+                    <svg class="inline w-6 h-6 ">
+                        <use xlink:href="/admin/images/heroicons/icon.svg#paint-brush"></use>
+                    </svg>
+                    <svg class="inline w-6 h-6 ">
+                        <use xlink:href="/admin/images/heroicons/icon.svg#shield-exclamation"></use>
+                    </svg>
+                    <svg class="inline w-6 h-6 ">
+                        <use xlink:href="/admin/images/heroicons/icon.svg#sparkles"></use>
+                    </svg>
+                    <svg class="inline w-6 h-6 ">
+                        <use xlink:href="/admin/images/heroicons/icon.svg#swatch"></use>
+                    </svg>
+                    <svg class="inline w-6 h-6 ">
+                        <use xlink:href="/admin/images/heroicons/icon.svg#trash"></use>
+                    </svg>
+                    <svg class="inline w-6 h-6 ">
+                        <use xlink:href="/admin/images/heroicons/icon.svg#user-circle"></use>
+                    </svg>
+                    <svg class="inline w-6 h-6 ">
+                        <use xlink:href="/admin/images/heroicons/icon.svg#user-group"></use>
+                    </svg>
+                    <svg class="inline w-6 h-6 ">
+                        <use xlink:href="/admin/images/heroicons/icon.svg#plus"></use>
+                    </svg>
+                    <svg class="inline w-6 h-6 ">
+                        <use xlink:href="/admin/images/heroicons/icon.svg#bars-4"></use>
+                    </svg>
+                    <svg class="inline w-6 h-6 ">
+                        <use xlink:href="/admin/images/heroicons/icon.svg#x-mark"></use>
+                    </svg>
+                    <svg class="inline w-6 h-6 ">
+                        <use xlink:href="/admin/images/heroicons/icon.svg#cloud-arrow-up"></use>
+                    </svg>
+                    <svg class="inline w-6 h-6 ">
+                        <use xlink:href="/admin/images/heroicons/icon.svg#trophy"></use>
+                    </svg>
+                    <svg class="inline w-6 h-6 ">
+                        <use xlink:href="/admin/images/heroicons/icon.svg#magnifying-glass"></use>
+                    </svg>
+                    <svg class="inline w-6 h-6 ">
+                        <use xlink:href="/admin/images/heroicons/icon.svg#arrow-path"></use>
+                    </svg>
+                </section>
+
+                <section class="mt-10">
+                    <h3 class="font-bold border-b pb-2 mb-2">アイコン付きボタン</h3>
+
+                    <a href="/admin/works/upload" class="h-fit py-2 px-4 bg-white text-gray-500 text-sm font-sans font-bold tracking-wider rounded-full shadow-lg shadow-gray-500/20 focus:outline-none border border-gray-300 hover:bg-gray-50 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none">
+                        <svg class="inline w-4 h-4 ">
+                            <use xlink:href="/admin/images/heroicons/icon.svg#cloud-arrow-up"></use>
+                        </svg>
+                        アップロード
+                    </a>
+                    <a href="/admin/works/create" class="h-fit py-2 px-4 bg-white text-gray-500 text-sm font-sans font-bold tracking-wider rounded-full shadow-lg shadow-gray-500/20 focus:outline-none border border-gray-300 hover:bg-gray-50 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none">
+                        <svg class="inline w-4 h-4 ">
+                            <use xlink:href="/admin/images/heroicons/icon.svg#plus"></use>
+                        </svg>
+                        新規登録
+                    </a>
+                </section>
+
+                <section class="mt-10">
+                    <h3 class="font-bold border-b pb-2 mb-2">見出し1</h3>
+                    <div class="flex items-center">
+                        <h2 class="inline-block text-xl sm:text-2xl font-extrabold text-slate-800 tracking-tight">Title タイトル</h2>
+                    </div>
+                </section>
+
+                <section class="mt-10">
+                    <h3 class="font-bold border-b pb-2 mb-2">見出し2</h3>
+                    <div class="flex justify-between">
+                        <div>
+                            <p class="mb-1 lg:mb-2 text-sm text-indigo-500 leading-6 font-bold">Title タイトル</p>
+                            <div class="flex items-center">
+                                <h2 class="inline-block text-xl sm:text-2xl font-extrabold text-slate-800 tracking-tight">サブタイトル</h2>
+                            </div>
+                        </div>
+                        <div class="flex flex-col justify-end"></div>
+                    </div>
+                </section>
+
+                <section class="mt-10">
+                    <h3 class="font-bold border-b pb-2 mb-2">テーブル</h3>
+
+                    <div class="w-full rounded-lg border border-slate-300 bg-white overflow-scroll mt-3 p-3">
+                        <table class="table-auto w-full bg-white border-collapse rounded-3xl">
+                            <caption class="text-sm caption-bottom">
+                                Table 3.1: Professional wrestlers and their signature moves.
+                            </caption>
+                            <thead class="bg-slate-100">
+                            <tr>
+                                <th></th>
+                                <th>Image</th>
+                                <th class="border-b border-slate-300 p-3 text-sm min-w-24 rounded-tl-md">
+                                    <a class="text-indigo-600 hover:underline">Song</a>
+                                </th>
+                                <th class="border-b border-slate-300 p-3 text-sm min-w-24">Artist</th>
+                                <th class="border-b border-slate-300 p-3 text-sm min-w-24 rounded-tr-md">Year</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td class="border-y border-slate-300 p-3 text-sm lg:text-base cursor-move">
+                                    <svg class="inline w-6 h-6 animate-spin text-slate-300">
+                                        <use xlink:href="/admin/images/heroicons/icon.svg#arrow-path"></use>
+                                    </svg>
+                                </td>
+                                <td class="border-y border-slate-300 p-3 text-sm lg:text-base">
+                                    <img src="https://placehold.jp/500x300.png" alt="" class="rounded shadow max-w-20 max-h-20 mx-auto image-bg" >
+                                </td>
+                                <td class="border-y border-slate-300 p-3 text-sm lg:text-base">
+                                    <a class="text-indigo-600 hover:underline">The Sliding Mr. Bones (Next Stop, Pottersville)</a>
+                                </td>
+                                <td class="border-y border-slate-300 p-3 text-sm lg:text-base">Malcolm Lockyer</td>
+                                <td class="border-y border-slate-300 p-3 text-sm lg:text-base">1961</td>
+                            </tr>
+                            <tr class="bg-rose-50">
+                                <td class="border-y border-slate-300 p-3 text-sm lg:text-base cursor-move">
+                                    <svg class="inline w-6 h-6 animate-spin text-slate-300">
+                                        <use xlink:href="/admin/images/heroicons/icon.svg#arrow-path"></use>
+                                    </svg>
+                                </td>
+                                <td class="border-y border-slate-300 p-3 text-sm lg:text-base">
+                                    <img src="https://placehold.jp/500x300.png" alt="" class="rounded shadow max-w-20 max-h-20 mx-auto image-bg" >
+                                </td>
+                                <td class="border-y border-slate-300 p-3 text-sm lg:text-base">
+                                    <a class="text-indigo-600 hover:underline">Witchy Woman</a>
+                                </td>
+                                <td class="border-y border-slate-300 p-3 text-sm lg:text-base">The Eagles</td>
+                                <td class="border-y border-slate-300 p-3 text-sm lg:text-base">1972</td>
+                            </tr>
+                            <tr>
+                                <td class="border-y border-slate-300 p-3 text-sm lg:text-base cursor-move">
+                                    <svg class="inline w-6 h-6 animate-spin text-slate-300">
+                                        <use xlink:href="/admin/images/heroicons/icon.svg#arrow-path"></use>
+                                    </svg>
+                                </td>
+                                <td class="border-y border-slate-300 p-3 text-sm lg:text-base">
+                                    <img src="https://placehold.jp/500x300.png" alt="" class="rounded shadow max-w-20 max-h-20 mx-auto image-bg" >
+                                </td>
+                                <td class="border-y border-slate-300 p-3 text-sm lg:text-base">Shining Star</td>
+                                <td class="border-y border-slate-300 p-3 text-sm lg:text-base">Earth, Wind, and Fire
+                                </td>
+                                <td class="border-y border-slate-300 p-3 text-sm lg:text-base">1975</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="mt-10">
+                    <div class="flex justify-center mt-5">
+                        <form name="pagination" method="get" action="">
+                            <div class="flex flex-wrap items-center gap-2 lg:gap-4">
+                                <button name="page" value="0" class="flex items-center gap-2 px-6 py-3 font-sans text-xs font-bold text-center text-gray-900 uppercase align-middle transition-all rounded-lg select-none hover:bg-gray-900/10 active:bg-gray-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none" disabled="">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true" class="w-4 h-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"></path>
+                                    </svg>
+                                    <span class="hidden md:inline-block">Previous</span>
+                                </button>
+                                <div class="flex items-center gap-2">
+                                    <button name="page" value="1" class="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg bg-gray-900 text-center align-middle font-sans text-xs font-medium uppercase text-white shadow-md shadow-gray-900/10 transition-all hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none">
+                                        <span class="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">1</span>
+                                    </button>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button name="page" value="2" class="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-gray-900 transition-all hover:bg-gray-900/10 active:bg-gray-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none">
+                                        <span class="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">2</span>
+                                    </button>
+                                </div>
+                                <button name="page" value="2" class="flex items-center gap-2 px-6 py-3 font-sans text-xs font-bold text-center text-gray-900 uppercase align-middle transition-all rounded-lg select-none hover:bg-gray-900/10 active:bg-gray-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none">
+                                    <span class="hidden md:inline-block">Next</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true" class="w-4 h-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+                <section class="mt-10">
+                    <h3 class="font-bold border-b pb-2 mb-2">検索</h3>
+
+                    <form class="max-w-lg mx-auto">
+                        <label class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                                <svg class="inline w-6 h-6 ">
+                                    <use xlink:href="/admin/images/heroicons/icon.svg#magnifying-glass"></use>
+                                </svg>
+                            </div>
+                            <input type="search"
+                                   class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 placeholder:text-gray-400 placeholder:italic placeholder:font-thin placeholder:text-xs md:placeholder:text-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
+                                   placeholder="Search Mockups, Logos..."/>
+                            <button type="submit" class="text-white absolute end-2.5 bottom-2.5 bg-indigo-500 hover:bg-indigo-600 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800">
+                                Search
+                            </button>
+                        </div>
+                    </form>
+                </section>
+
+                <section class="mt-10">
+                    <h3 class="font-bold border-b pb-2 mb-2">リスト</h3>
+
+                    <div class="border border-slate-300 rounded-2xl">
+                        <ul>
+                            <li class="border-b border-slate-300 p-4">
+                                <p class="text-xs lg:text-sm font-bold">見出し</p>
+                                <p class="text-xs lg:text-sm">テキスト テキスト テキスト</p>
+                            </li>
+                            <li class="border-b border-slate-300 p-4">
+                                <p class="text-xs lg:text-sm font-bold">見出し</p>
+                                <p class="text-xs lg:text-sm">テキスト テキスト テキスト</p>
+                            </li>
+                            <li class="flex gap-2 p-4">
+                                <div class="flex-none">
+                                    <svg class="inline w-6 h-6 ">
+                                        <use xlink:href="/admin/images/heroicons/icon.svg#bell-alert"></use>
+                                    </svg>
+                                </div>
+                                <div class="flex-1 col-span-3">
+                                    <p class="text-xs lg:text-sm font-bold">見出し</p>
+                                    <p class="text-xs lg:text-sm">テキスト テキスト テキスト</p>
+                                </div>
+                                <div class="flex-none text-right">
+                                    <input type="submit" value="実行"
+                                           class="py-1 px-2 bg-indigo-500 text-white text-sm font-sans font-bold tracking-wider rounded-full shadow-lg shadow-indigo-500/50 focus:outline-none">
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section class="mt-10">
+                    <h3 class="font-bold border-b pb-2 mb-2">画像リスト</h3>
+
+                    <ul class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <li>
+                            <div class="relative border rounded bg-white p-2 cursor-move">
+                                <img src="https://placehold.jp/500x300.png" alt="" class="rounded shadow max-h-80 mx-auto">
+                                <div class="absolute left-0 right-0 bottom-4 mx-auto w-20">
+                                    <button type="button" class="py-1 px-4 bg-white text-gray-500 text-sm font-sans font-bold tracking-wider rounded-full shadow-lg shadow-gray-500/20 focus:outline-none border border-gray-300 hover:bg-gray-50 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none js-delete">削除</button>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="relative border rounded bg-white p-2 cursor-move">
+                                <img src="https://placehold.jp/300x500.png" alt="" class="rounded shadow max-h-80 mx-auto">
+                                <div class="absolute left-0 right-0 bottom-4 mx-auto w-20">
+                                    <button type="button" class="py-1 px-4 bg-white text-gray-500 text-sm font-sans font-bold tracking-wider rounded-full shadow-lg shadow-gray-500/20 focus:outline-none border border-gray-300 hover:bg-gray-50 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none js-delete">削除</button>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="relative border rounded bg-white p-2 cursor-move">
+                                <img src="https://placehold.jp/300x300.png" alt="" class="rounded shadow max-h-80 mx-auto">
+                                <div class="absolute left-0 right-0 bottom-4 mx-auto w-20">
+                                    <button type="button" class="py-1 px-4 bg-white text-gray-500 text-sm font-sans font-bold tracking-wider rounded-full shadow-lg shadow-gray-500/20 focus:outline-none border border-gray-300 hover:bg-gray-50 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none js-delete">削除</button>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="relative border rounded bg-white p-2 cursor-move">
+                                <img src="https://placehold.jp/1000x500.png" alt="" class="rounded shadow max-h-80 mx-auto">
+                                <div class="absolute left-0 right-0 bottom-4 mx-auto w-20">
+                                    <button type="button" class="py-1 px-4 bg-white text-gray-500 text-sm font-sans font-bold tracking-wider rounded-full shadow-lg shadow-gray-500/20 focus:outline-none border border-gray-300 hover:bg-gray-50 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none js-delete">削除</button>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="relative border rounded bg-white p-2 cursor-move">
+                                <img src="https://placehold.jp/300x300.png" alt="" class="rounded shadow max-h-80 mx-auto">
+                                <div class="absolute left-0 right-0 bottom-4 mx-auto w-20">
+                                    <button type="button" class="py-1 px-4 bg-white text-gray-500 text-sm font-sans font-bold tracking-wider rounded-full shadow-lg shadow-gray-500/20 focus:outline-none border border-gray-300 hover:bg-gray-50 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none js-delete">削除</button>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="" class="w-full rounded shadow bg-slate-100 animate-pulse" style="background: repeating-linear-gradient(45deg, #eee, #eee 15px, #fff 0, #fff 30px);">
+                        </li>
+                    </ul>
+                </section>
+
+                <section class="mt-10">
+                    <h3 class="font-bold border-b pb-2 mb-2">フォーム</h3>
+
+                    <form>
+                        <label class="block mt-5">
+                            <span class="block text-sm font-sans font-normal text-slate-700">項目名テキスト <span class="text-gray-400 italic">- 任意</span></span>
+                            <span class="block text-sm text-slate-500 font-thin italic">注釈テキスト</span>
+                            <span class="block text-sm text-rose-500 italic">エラーメッセージテキスト</span>
+                        </label>
+
+                        <label class="block mt-5">
+                            <span class="block text-sm font-sans font-normal text-slate-700">テキストタイプ</span>
+                            <input type="text" class="rounded w-full placeholder:text-slate-500 placeholder:font-thin transition duration-300 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500" placeholder="プレースホルダー">
+                        </label>
+
+                        <label class="block mt-5">
+                            <span class="block text-sm font-sans font-normal text-slate-700">テキストタイプ</span>
+                            <input type="text" class="rounded w-full pt-7 placeholder:text-slate-500 placeholder:font-thin transition duration-300 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500" placeholder="">
+                        </label>
+
+                        <label class="block mt-5">
+                            <span class="block text-sm font-sans font-normal text-slate-700">テキストタイプ（ボタン付き）</span>
+                            <div class="relative">
+                                <input type="text" class="block rounded w-full placeholder:text-slate-500 placeholder:font-thin transition duration-300 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500">
+                                <button type="button" class="absolute end-1.5 bottom-1.5 py-1 px-3 bg-white text-gray-500 text-sm font-sans font-bold tracking-wider rounded focus:outline-none border border-gray-300 hover:bg-gray-50 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none">削除</button>
+                            </div>
+                        </label>
+
+                        <label class="block mt-5">
+                            <span class="block text-sm font-sans font-normal text-slate-700">テキストエリア</span>
+                            <textarea class="rounded w-full placeholder:text-slate-500 placeholder:font-thin transition duration-300 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500 leading-6 h-40" placeholder="プレースホルダー"></textarea>
+                        </label>
+
+                        <label class="block mt-5">
+                            <span class="absolute block top-2 left-3 text-sm font-thin text-slate-500">テキストエリア</span>
+                            <textarea class="rounded w-full pt-7 placeholder:text-slate-500 placeholder:font-thin transition duration-300 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500 leading-6 h-40" placeholder=""></textarea>
+                        </label>
+
+                        <label class="block mt-5">
+                            <span class="block text-sm font-sans font-normal text-slate-700">日付</span>
+                            <input type="text" class="flatpickr1 rounded w-full placeholder:text-slate-500 placeholder:font-thin transition duration-300 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500" placeholder="YYYY-MM-DD">
+                            <script>flatpickr('.flatpickr1', { disableMobile: true });</script>
+                        </label>
+
+                        <label class="block mt-5">
+                            <span class="absolute block top-2 left-3 text-sm font-thin text-slate-500">日付</span>
+                            <input type="text" class="flatpickr3 rounded w-full pt-7 placeholder:text-slate-500 placeholder:font-thin transition duration-300 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500" placeholder="YYYY-MM-DD">
+                            <script>flatpickr('.flatpickr3', { disableMobile: true });</script>
+                        </label>
+
+                        <label class="block mt-5">
+                            <span class="block text-sm font-sans font-normal text-slate-700">日時</span>
+                            <input type="text" class="flatpickr2 rounded w-full placeholder:text-slate-500 placeholder:font-thin transition duration-300 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500" placeholder="YYYY-MM-DD HH:MM">
+                            <script>flatpickr('.flatpickr2', { disableMobile: true, enableTime: true, dateFormat: 'Y-m-d H:i' });</script>
+                        </label>
+
+                        <label class="block mt-5">
+                            <span class="block top-2 left-3 text-sm font-thin text-slate-500">日時</span>
+                            <input type="text" class="flatpickr4 rounded w-full pt-7 placeholder:text-slate-500 placeholder:font-thin transition duration-300 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500" placeholder="YYYY-MM-DD HH:MM">
+                            <script>flatpickr('.flatpickr4', { disableMobile: true, enableTime: true, dateFormat: 'Y-m-d H:i' });</script>
+                        </label>
+
+                        <label class="block mt-5">
+                            <span class="block top-2 left-3 text-sm font-normal text-slate-700 tracking-wide select-none">ファイルタイプ</span>
+                            <input type="file" class="rounded w-full p-3 text-sm bg-white border border-[#6b7280] placeholder:text-slate-500 placeholder:font-thin transition duration-300 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500" placeholder="">
+                        </label>
+
+                        <div class="mt-5">
+                            <span class="block text-sm font-sans font-normal text-slate-700">チェックボックス</span>
+                            <label class="block">
+                                <input type="checkbox" name="check1" value="1">
+                                <span class="text-base font-sans font-normal text-slate-700">チェック1</span>
+                            </label>
+                            <label class="block">
+                                <input type="checkbox" name="check2" value="2">
+                                <span class="text-base font-sans font-normal text-slate-700">チェック2</span>
+                            </label>
+                        </div>
+
+                        <div class="mt-5">
+                            <span class="block text-sm font-sans font-normal text-slate-700">ラジオボタン</span>
+                            <label class="inline">
+                                <input type="radio" name="radio" value="1">
+                                <span class="text-base font-sans font-normal text-slate-700">ラジオ1</span>
+                            </label>
+                            <label class="inline ml-2">
+                                <input type="radio" name="radio" value="2">
+                                <span class="text-base font-sans font-normal text-slate-700">ラジオ2</span>
+                            </label>
+                        </div>
+
+                        <label class="block mt-5">
+                            <span class="block text-sm font-sans font-normal text-slate-700">選択（選択肢が6個以上）</span>
+                            <select class="rounded transition duration-300 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500">
+                                <option>選択肢1</option>
+                                <option>選択肢2</option>
+                                <option>選択肢3</option>
+                            </select>
+                        </label>
+
+                        <label class="block mt-5">
+                            <span class="absolute block top-2 left-3 text-sm font-thin text-slate-500">選択（選択肢が6個以上）</span>
+                            <select class="rounded transition duration-300 pt-7 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500">
+                                <option>選択肢1</option>
+                                <option>選択肢2</option>
+                                <option>選択肢3</option>
+                            </select>
+                        </label>
+
+                        <div class="mt-5">
+                            <span class="block text-sm font-sans font-normal text-slate-700">送信ボタン</span>
+                            <input type="submit" value="保存" class="py-2 px-4 bg-indigo-500 text-white text-sm font-sans font-bold tracking-wider rounded-full shadow-lg shadow-indigo-500/50 focus:outline-none hover:bg-indigo-600 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none">
+                        </div>
+
+                        <div class="mt-5">
+                            <span class="block text-sm font-sans font-normal text-slate-700">キャンセルボタン</span>
+                            <input type="button" value="キャンセル" class="py-2 px-4 bg-white text-gray-500 text-sm font-sans font-bold tracking-wider rounded-full shadow-lg shadow-gray-500/20 focus:outline-none border border-gray-300 hover:bg-gray-50 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none">
+                        </div>
+
+                        <div class="mt-5">
+                            <span class="block text-sm font-sans font-normal text-slate-700">無効ボタン</span>
+                            <input type="button" value="保存" class="py-2 px-4 bg-indigo-500 text-white text-sm font-sans font-bold tracking-wider rounded-full shadow-lg shadow-indigo-500/50 focus:outline-none disabled:text-white disabled:bg-slate-200 disabled:shadow-none" disabled="disabled">
+                        </div>
+                    </form>
+
+                    <div class="mt-5">
+                        <span class="block text-sm font-sans font-normal text-slate-700">削除ボタン</span>
+                        <div class="border-2 border-rose-500 bg-rose-100 rounded-md p-5">
+                            <p class="text-sm mb-1 font-semibold">削除しますか?</p>
+                            <p class="text-xs mb-3">削除後は元に戻すことができません</p>
+                            <button type="submit" value="削除" class="py-2 px-4 bg-rose-500 text-white text-sm font-sans font-bold tracking-wider rounded-full shadow-lg shadow-rose-500/50 focus:outline-none hover:bg-rose-600 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none">
+                                <svg class="inline w-6 h-6 ">
+                                    <use xlink:href="/admin/images/heroicons/icon.svg#trash"></use>
+                                </svg>
+                                削除する
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mt-5">
+                        <div class="border-2 border-indigo-500 bg-indigo-100 rounded-md p-5">
+                            <p class="text-sm mb-1 font-semibold text-indigo-500">使用中のため削除はできません</p>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+        <div class="mx-5 lg:mx-0 my-10">
+            <footer>
+                <p class="font-sans font-thin text-sm">Copyrights &copy; Suzuhiro Co.,Ltd. All rights reserved.</p>
+            </footer>
+        </div>
+    </div>
+</div>
+</body>
+</html>
