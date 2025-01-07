@@ -1,7 +1,6 @@
 services:
   web:
     image: ghcr.io/buddying-inc/webserver-centos83:apache24-php82
-    platform: linux/amd64
     container_name: aura-web
     working_dir: /var/www/html
     volumes:
@@ -22,7 +21,6 @@ services:
 
   mysql:
     image: ghcr.io/buddying-inc/mysql:80
-    platform: linux/amd64
     container_name: aura-mysql
     volumes:
       - type: bind
