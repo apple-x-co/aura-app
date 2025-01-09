@@ -10,13 +10,13 @@ use Stringable;
 
 class RequestHandler implements Stringable
 {
-    /** @var int<200, max>  */
+    /** @var int<200, max> */
     public int $code = StatusCode::OK;
 
-    /** @var array<string, string>  */
+    /** @var array<string, string> */
     public array $headers = [];
 
-    /** @var array<string, mixed>|null  */
+    /** @var array<string, mixed>|null */
     public array|null $body = null;
 
     /** @var resource|null */
