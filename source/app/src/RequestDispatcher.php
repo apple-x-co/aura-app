@@ -170,10 +170,13 @@ final class RequestDispatcher
             }
 
             if (isset($object->headers[ResponseHeader::LOCATION])) {
+                $headers = $object->headers;
+                $redirectUrl = $headers[ResponseHeader::LOCATION];
+                unset($headers[ResponseHeader::LOCATION]);
                 return new RedirectResponse(
-                    $object->headers[ResponseHeader::LOCATION],
+                    $redirectUrl,
                     $object->code,
-                    $object->headers,
+                    $headers,
                 );
             }
 
