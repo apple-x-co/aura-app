@@ -199,7 +199,7 @@ final class RequestDispatcher
 
         $response = $this->responseFactory->createResponse();
 
-        $view = $renderer->render($object);
+        $body = $renderer->render($object);
 
         foreach ($object->headers as $name => $value) {
             $response = $response->withHeader($name, $value);
@@ -211,7 +211,7 @@ final class RequestDispatcher
             return $response->withStatus($object->code);
         }
 
-        $response = $response->withBody($this->streamFactory->createStream($view));
+        $response = $response->withBody($this->streamFactory->createStream($body));
 
         return $response->withStatus($object->code);
     }
