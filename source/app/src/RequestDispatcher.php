@@ -198,6 +198,9 @@ final class RequestDispatcher
         assert($renderer instanceof RendererInterface);
 
         $response = $this->responseFactory->createResponse();
+
+        $view = $renderer->render($object);
+
         foreach ($object->headers as $name => $value) {
             $response = $response->withHeader($name, $value);
         }
@@ -208,7 +211,7 @@ final class RequestDispatcher
             return $response->withStatus($object->code);
         }
 
-        $response = $response->withBody($this->streamFactory->createStream($renderer->render($object)));
+        $response = $response->withBody($this->streamFactory->createStream($view));
 
         return $response->withStatus($object->code);
     }
